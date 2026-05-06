@@ -587,6 +587,9 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
               </li>
             ))}
           </ul>
+          <button onClick={onDetails} className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-extrabold text-primary py-2">
+            See full history <ChevronRight size={14} />
+          </button>
         </div>
       </div>
       <BottomNav active={tab} onChange={setTab} />
