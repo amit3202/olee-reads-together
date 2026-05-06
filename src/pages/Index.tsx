@@ -66,17 +66,27 @@ const Index = () => {
   };
 
   const screens: { id: Screen; label: string }[] = [
-    { id: "splash", label: "Splash" },
-    { id: "welcome", label: "Welcome" },
-    { id: "setup1", label: "Setup 1" },
-    { id: "setup2", label: "Setup 2" },
-    { id: "today", label: "Today" },
-    { id: "timer", label: "Timer" },
-    { id: "celebrate", label: "Celebrate" },
-    { id: "progress", label: "Progress" },
-    { id: "stories", label: "Stories" },
-    { id: "story", label: "Story" },
-    { id: "missed", label: "Missed" },
+    { id: "splash", label: "1. Splash" },
+    { id: "welcome", label: "2. Welcome" },
+    { id: "setup1", label: "3. Parent" },
+    { id: "setup2", label: "4. Child" },
+    { id: "setupDone", label: "5. All set" },
+    { id: "today", label: "6. Today" },
+    { id: "timer", label: "7. Timer" },
+    { id: "celebrate", label: "8. Celebrate" },
+    { id: "missed", label: "9. Missed" },
+    { id: "progress", label: "10. Dashboard" },
+    { id: "progressDetails", label: "11. Details" },
+    { id: "stories", label: "12. Stories" },
+    { id: "storyRead", label: "13. Read" },
+    { id: "story", label: "Story info" },
+    { id: "settings", label: "14. Settings" },
+    { id: "editChild", label: "15. Edit child" },
+    { id: "subscription", label: "16. Premium" },
+    { id: "login", label: "17. Login" },
+    { id: "notifDaily", label: "18. Notif daily" },
+    { id: "notifMissed", label: "19. Notif missed" },
+    { id: "notifWeekly", label: "20. Notif weekly" },
   ];
 
   return (
