@@ -9,13 +9,50 @@ import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "today"
-  | "timer" | "celebrate" | "progress" | "stories" | "missed";
+  | "timer" | "celebrate" | "progress" | "stories" | "story" | "missed";
+
+export type Story = {
+  t: string; time: number; moral: string; age: string;
+  bg: string; icon: string; summary: string; chars: string[]; lesson: string;
+};
+
+const STORIES: Story[] = [
+  {
+    t: "The lion and the mouse", time: 5, moral: "Kindness", age: "4-6",
+    bg: "#FCE3DD", icon: "#E8836B",
+    summary: "A tiny mouse promises to help a mighty lion one day. When the lion is caught in a hunter's net, the little mouse remembers — and chews him free.",
+    chars: ["Lion", "Mouse", "Hunter"],
+    lesson: "Even the smallest friend can make the biggest difference.",
+  },
+  {
+    t: "The thirsty crow", time: 4, moral: "Cleverness", age: "4-6",
+    bg: "#DDEAF7", icon: "#7AB8D9",
+    summary: "On a hot day, a thirsty crow finds a pot with just a little water at the bottom. He thinks, then drops pebbles in one by one until the water rises.",
+    chars: ["Crow", "Pebbles", "Pot"],
+    lesson: "A clever idea is better than giving up.",
+  },
+  {
+    t: "The boy who cried wolf", time: 6, moral: "Honesty", age: "5-7",
+    bg: "#DEF1E5", icon: "#5BAF85",
+    summary: "A young shepherd boy tricks his village by shouting 'Wolf!' just for fun. When a real wolf finally comes, no one believes him.",
+    chars: ["Shepherd boy", "Villagers", "Wolf"],
+    lesson: "When we tell the truth, people trust us.",
+  },
+  {
+    t: "The golden goose", time: 7, moral: "Generosity", age: "7-9",
+    bg: "#FCEFD2", icon: "#EF9F27",
+    summary: "A kind young man shares his last piece of bread with an old stranger. In return, he is given a goose with golden feathers — and a magical adventure begins.",
+    chars: ["Dummling", "Old man", "Golden goose"],
+    lesson: "Kindness shared comes back many times over.",
+  },
+];
 
 const PHONE = "relative mx-auto w-[360px] h-[760px] bg-background rounded-[40px] overflow-hidden shadow-[0_30px_80px_-20px_rgba(45,90,69,0.35)] border-[10px] border-foreground/90";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("splash");
   const [tab, setTab] = useState<"today" | "progress" | "settings">("today");
+  const [activeStory, setActiveStory] = useState<Story>(STORIES[0]);
 
   const goTab = (t: "today" | "progress" | "settings") => {
     setTab(t);
