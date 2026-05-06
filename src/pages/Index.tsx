@@ -70,6 +70,7 @@ const Index = () => {
     { id: "celebrate", label: "Celebrate" },
     { id: "progress", label: "Progress" },
     { id: "stories", label: "Stories" },
+    { id: "story", label: "Story" },
     { id: "missed", label: "Missed" },
   ];
 
@@ -122,7 +123,8 @@ const Index = () => {
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "progress" && <Progress tab={tab} setTab={goTab} />}
-            {screen === "stories" && <Stories onBack={() => setScreen("today")} />}
+            {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
+            {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("timer")} />}
             {screen === "missed" && <Missed onNext={() => setScreen("today")} />}
           </div>
         </div>
