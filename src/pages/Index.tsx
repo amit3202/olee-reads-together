@@ -742,4 +742,459 @@ const Missed = ({ onNext }: { onNext: () => void }) => (
   </div>
 );
 
+/* ---------- Login (17) ---------- */
+const Login = ({ onBack, onNext }: { onBack: () => void; onNext: () => void }) => {
+  const [method, setMethod] = useState<"email" | "phone">("email");
+  return (
+    <div className="w-full h-full flex flex-col px-6 pt-2 pb-6">
+      <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+        <ArrowLeft size={18} />
+      </button>
+      <div className="mt-4 flex flex-col items-center">
+        <Olee pose="wave" expression="happy" size={120} />
+        <h2 className="text-2xl font-display mt-3">Welcome back!</h2>
+        <p className="text-sm text-muted-foreground mt-1">Olee missed you.</p>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-2 bg-muted p-1 rounded-2xl">
+        {(["email", "phone"] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => setMethod(m)}
+            className={cn(
+              "py-2.5 rounded-xl text-sm font-bold capitalize",
+              method === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+            )}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+
+      <label className="text-xs font-bold text-foreground/70 mt-5 mb-2">
+        {method === "email" ? "EMAIL" : "PHONE"}
+      </label>
+      <input
+        defaultValue={method === "email" ? "priya@example.com" : "+91 98765 43210"}
+        className="bg-card border-2 border-border focus:border-primary outline-none rounded-2xl px-4 py-3.5 font-semibold"
+      />
+      <p className="text-[11px] text-muted-foreground font-semibold mt-2">We'll send a one-time code. No password needed.</p>
+
+      <div className="mt-5 space-y-3">
+        <PrimaryBtn onClick={onNext}>Send code <ArrowRight size={18} /></PrimaryBtn>
+        <button className="w-full bg-card border-2 border-border font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#EA4335] via-[#FBBC05] to-[#4285F4]" />
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Setup done (5) ---------- */
+const SetupDone = ({ onNext }: { onNext: () => void }) => (
+  <div className="w-full h-full flex flex-col items-center px-6 pt-6 pb-6 bg-gradient-to-b from-primary-light/60 to-background">
+    <div className="animate-float">
+      <Olee pose="celebrate" expression="excited" size={170} />
+    </div>
+    <div className="flex gap-1.5 mt-2">
+      {[0, 1, 2].map((i) => (
+        <Sparkles key={i} size={20} className="text-accent animate-pop" style={{ animationDelay: `${i * 120}ms` }} />
+      ))}
+    </div>
+    <h2 className="text-3xl font-display mt-4 text-center">You're all set!</h2>
+    <p className="text-sm text-muted-foreground text-center mt-2 leading-relaxed">
+      Olee can't wait to start reading with Aarav. Here's what tomorrow looks like:
+    </p>
+
+    <div className="mt-5 w-full bg-card border-2 border-primary/30 rounded-3xl p-4 space-y-3">
+      {[
+        { i: BookOpen, t: "Pick any book", s: "From your shelf or Olee's corner" },
+        { i: Clock, t: "Tap play, read 15 min", s: "Olee walks the timer ring" },
+        { i: Star, t: "Earn stars & a streak", s: "Celebrate together" },
+      ].map(({ i: Icon, t, s }, idx) => (
+        <div key={idx} className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center text-primary">
+            <Icon size={18} />
+          </div>
+          <div>
+            <p className="text-sm font-extrabold">{t}</p>
+            <p className="text-[11px] text-muted-foreground font-semibold">{s}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div className="mt-auto w-full">
+      <PrimaryBtn onClick={onNext}>Go to Today <ArrowRight size={18} /></PrimaryBtn>
+    </div>
+  </div>
+);
+
+/* ---------- Progress details (11) ---------- */
+const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
+  const cells = Array.from({ length: 30 }, (_, i) => {
+    const r = (i * 7) % 11;
+    return r < 7 ? "done" : r < 9 ? "miss" : "future";
+  });
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="px-5 pt-2 pb-3 flex items-center gap-3">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <h2 className="text-lg font-display">Reading history</h2>
+      </div>
+      <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">
+        <div className="bg-card border border-border rounded-3xl p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">MAY 2026</p>
+            <div className="flex gap-3 text-[10px] font-bold">
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-primary" /> Read</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-muted" /> Missed</span>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-7 gap-1.5">
+            {cells.map((c, i) => (
+              <div key={i} className={cn(
+                "aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold",
+                c === "done" && "bg-primary text-primary-foreground",
+                c === "miss" && "bg-muted text-muted-foreground",
+                c === "future" && "bg-card border border-dashed border-border text-muted-foreground/50"
+              )}>{i + 1}</div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-3 bg-card border border-border rounded-3xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">BOOK LOG</p>
+          <ul className="mt-2 divide-y divide-border">
+            {[
+              { n: "The Tiger Who Came to Tea", d: "May 6", m: "15 min" },
+              { n: "Where the Wild Things Are", d: "May 5", m: "15 min" },
+              { n: "Charlotte's Web (ch. 3)", d: "May 4", m: "18 min" },
+              { n: "The Gruffalo", d: "May 3", m: "12 min" },
+              { n: "Matilda (ch. 1)", d: "May 2", m: "15 min" },
+            ].map((b, i) => (
+              <li key={i} className="py-2.5 flex items-center gap-3">
+                <BookOpen size={16} className="text-primary" />
+                <p className="flex-1 text-sm font-bold truncate">{b.n}</p>
+                <p className="text-[11px] text-muted-foreground font-semibold">{b.d} · {b.m}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-3 bg-accent-soft border-2 border-dashed border-accent/40 rounded-3xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-accent">REFLECTION JOURNAL</p>
+          <div className="mt-3 space-y-2.5">
+            {[
+              { d: "May 6", t: "I liked when the tiger drank ALL the tea!" },
+              { d: "May 4", t: "Wilbur is the best pig ever." },
+              { d: "May 2", t: "Matilda is so smart." },
+            ].map((j, i) => (
+              <div key={i} className="bg-card rounded-xl p-3">
+                <p className="text-[10px] font-bold text-muted-foreground">{j.d}</p>
+                <p className="text-sm font-bold text-foreground mt-0.5">"{j.t}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Story reading (13) ---------- */
+const StoryRead = ({ story, onBack, onComplete }: { story: Story; onBack: () => void; onComplete: () => void }) => (
+  <div className="w-full h-full flex flex-col">
+    <div className="px-5 pt-2 pb-2 flex items-center justify-between border-b border-border">
+      <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+        <ArrowLeft size={18} />
+      </button>
+      <p className="text-xs font-extrabold truncate max-w-[180px]">{story.t}</p>
+      <span className="text-[10px] font-bold text-muted-foreground">62%</span>
+    </div>
+    <div className="h-1 bg-muted">
+      <div className="h-full bg-primary" style={{ width: "62%" }} />
+    </div>
+
+    <div className="flex-1 overflow-y-auto px-6 pt-5 pb-6 scrollbar-hide">
+      <h1 className="text-3xl font-display leading-tight">{story.t}</h1>
+      <p className="text-xs font-bold text-muted-foreground mt-1">A tale of {story.moral.toLowerCase()} · {story.time} min</p>
+
+      <div className="mt-5 space-y-4 text-[15px] leading-[1.7] text-foreground/85 font-medium">
+        <p className="first-letter:text-5xl first-letter:font-display first-letter:float-left first-letter:mr-2 first-letter:leading-none first-letter:text-primary">
+          {story.summary}
+        </p>
+        <p>
+          And so our little friend learned something important that day. The world can feel very big when you are very small, but a brave heart and a kind word can carry you a long way.
+        </p>
+        <p>
+          The sun began to set, painting the sky in soft oranges and pinks. {story.chars[0]} smiled, knowing that tomorrow would bring another adventure.
+        </p>
+        <div className="my-5 flex items-center justify-center gap-2 text-muted-foreground">
+          <span className="h-px bg-border flex-1" />
+          <Heart size={14} />
+          <span className="h-px bg-border flex-1" />
+        </div>
+        <p className="font-display text-lg text-center text-primary">{story.lesson}</p>
+      </div>
+    </div>
+
+    <div className="px-5 pb-5 pt-3 border-t border-border bg-card">
+      <PrimaryBtn onClick={onComplete}>
+        <Check size={18} /> Mark as complete
+      </PrimaryBtn>
+    </div>
+  </div>
+);
+
+/* ---------- Settings (14) ---------- */
+const SettingsScreen = ({ tab, setTab, onEdit, onSubscribe, onLogout }: any) => {
+  const Row = ({ icon: Icon, label, value, onClick, danger }: any) => (
+    <button onClick={onClick} className="w-full flex items-center gap-3 py-3.5 active:bg-muted/40 rounded-xl px-2 -mx-2">
+      <div className={cn(
+        "w-9 h-9 rounded-xl flex items-center justify-center",
+        danger ? "bg-destructive/10 text-destructive" : "bg-primary-light text-primary"
+      )}>
+        <Icon size={17} />
+      </div>
+      <span className={cn("flex-1 text-left text-sm font-bold", danger && "text-destructive")}>{label}</span>
+      {value && <span className="text-xs text-muted-foreground font-semibold">{value}</span>}
+      {!danger && <ChevronRight size={16} className="text-muted-foreground" />}
+    </button>
+  );
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="px-6 pt-2 pb-3">
+        <h2 className="text-xl font-display">Settings</h2>
+      </div>
+      <div className="flex-1 overflow-y-auto px-5 pb-24 scrollbar-hide space-y-4">
+        <div className="bg-card border border-border rounded-3xl p-4 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center">
+            <Olee pose="wave" size={42} />
+          </div>
+          <div className="flex-1">
+            <p className="font-extrabold">Priya</p>
+            <p className="text-xs text-muted-foreground font-semibold">Free plan</p>
+          </div>
+          <button onClick={onSubscribe} className="text-[10px] font-extrabold bg-accent text-accent-foreground px-2.5 py-1.5 rounded-full flex items-center gap-1">
+            <Crown size={11} /> UPGRADE
+          </button>
+        </div>
+
+        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">READING</p>
+          <Row icon={Clock} label="Reminder time" value="6:30 PM" onClick={() => {}} />
+          <Row icon={User} label="Aarav's profile" value="Age 6" onClick={onEdit} />
+          <Row icon={Bell} label="Notifications" value="On" onClick={() => {}} />
+        </div>
+
+        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">ACCOUNT</p>
+          <Row icon={Crown} label="Subscription" value="Free" onClick={onSubscribe} />
+          <Row icon={HelpCircle} label="Help & about" onClick={() => {}} />
+          <Row icon={LogOut} label="Log out" onClick={onLogout} danger />
+        </div>
+
+        <p className="text-center text-[11px] text-muted-foreground font-semibold">ReadSprout v1.0 · Made with 💚</p>
+      </div>
+      <BottomNav active={tab} onChange={setTab} />
+    </div>
+  );
+};
+
+/* ---------- Edit child profile (15) ---------- */
+const EditChild = ({ onBack }: { onBack: () => void }) => {
+  const [age, setAge] = useState(6);
+  const [name, setName] = useState("Aarav");
+  const [level, setLevel] = useState("Budding");
+  return (
+    <div className="w-full h-full flex flex-col px-6 pt-2 pb-6">
+      <div className="flex items-center justify-between">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <h2 className="text-base font-display">Edit profile</h2>
+        <div className="w-10" />
+      </div>
+
+      <div className="mt-4 flex justify-center">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-full bg-primary-light flex items-center justify-center font-display text-3xl text-primary">A</div>
+          <button className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md">
+            <Pencil size={14} />
+          </button>
+        </div>
+      </div>
+
+      <label className="text-xs font-bold text-foreground/70 mt-5 mb-2">CHILD'S NAME</label>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="bg-card border-2 border-border focus:border-primary outline-none rounded-2xl px-4 py-3.5 font-semibold"
+      />
+
+      <label className="text-xs font-bold text-foreground/70 mt-5 mb-2">AGE</label>
+      <div className="flex gap-2 justify-between">
+        {[4, 5, 6, 7, 8, 9].map((a) => (
+          <button
+            key={a}
+            onClick={() => setAge(a)}
+            className={cn(
+              "w-11 h-11 rounded-full font-bold text-sm border-2 transition",
+              age === a ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-foreground/70"
+            )}
+          >
+            {a}
+          </button>
+        ))}
+      </div>
+
+      <label className="text-xs font-bold text-foreground/70 mt-5 mb-2">READING LEVEL</label>
+      <div className="grid grid-cols-3 gap-2">
+        {["Sprout", "Budding", "Blooming"].map((l) => (
+          <button
+            key={l}
+            onClick={() => setLevel(l)}
+            className={cn(
+              "py-3 rounded-2xl text-xs font-bold border-2",
+              level === l ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-foreground/70"
+            )}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
+      <button className="mt-5 w-full text-sm font-bold text-primary bg-primary-light py-3 rounded-2xl flex items-center justify-center gap-2">
+        <Sparkles size={14} /> Add another child (Premium)
+      </button>
+
+      <div className="mt-auto pb-2">
+        <PrimaryBtn onClick={onBack}><Check size={18} /> Save changes</PrimaryBtn>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Subscription (16) ---------- */
+const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
+  const features = [
+    { t: "Full Story Corner (150+ tales)", free: false },
+    { t: "Unlimited reading history", free: false },
+    { t: "Multiple child profiles", free: false },
+    { t: "Weekly progress reports", free: false },
+    { t: "Keepsake PDF export", free: false },
+    { t: "Daily 15-min timer", free: true },
+    { t: "30 starter stories", free: true },
+  ];
+  return (
+    <div className="w-full h-full flex flex-col bg-gradient-to-b from-accent-soft via-background to-background">
+      <div className="px-5 pt-2 pb-2 flex items-center justify-between">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <span className="text-[10px] font-extrabold tracking-wider text-accent bg-card px-3 py-1.5 rounded-full flex items-center gap-1">
+          <Crown size={11} /> PREMIUM
+        </span>
+        <div className="w-10" />
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-6 pb-4 scrollbar-hide">
+        <div className="flex justify-center mt-2">
+          <Olee pose="books" expression="excited" size={130} />
+        </div>
+        <h2 className="text-2xl font-display text-center mt-2 leading-tight">
+          Unlock more stories <br />with <span className="text-accent">Olee Premium</span>
+        </h2>
+        <p className="text-sm text-muted-foreground text-center mt-2">No pressure — upgrade when you're ready.</p>
+
+        <div className="mt-5 bg-card border-2 border-accent rounded-3xl p-5 shadow-lg relative overflow-hidden">
+          <div className="absolute -top-3 right-5 bg-accent text-accent-foreground text-[10px] font-extrabold px-3 py-1 rounded-full">BEST VALUE</div>
+          <p className="text-xs font-extrabold text-muted-foreground tracking-wider">MONTHLY</p>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-4xl font-display">₹199</span>
+            <span className="text-sm text-muted-foreground font-semibold">/ month</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground font-semibold mt-1">Cancel anytime · Secure payments via Razorpay</p>
+
+          <ul className="mt-4 space-y-2">
+            {features.map((f, i) => (
+              <li key={i} className="flex items-center gap-2 text-sm">
+                <span className={cn(
+                  "w-5 h-5 rounded-full flex items-center justify-center",
+                  f.free ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"
+                )}>
+                  <Check size={12} />
+                </span>
+                <span className={cn("font-bold", f.free ? "text-muted-foreground" : "text-foreground")}>{f.t}</span>
+                {f.free && <span className="ml-auto text-[10px] text-muted-foreground">in free</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="px-5 pb-5">
+        <PrimaryBtn onClick={onBack}><Crown size={18} /> Start Premium</PrimaryBtn>
+        <p className="text-center text-[11px] text-muted-foreground font-semibold mt-2">Maybe later — Olee will be here.</p>
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Notification preview (18, 19, 20) ---------- */
+const Notification_ = ({ kind, onOpen }: { kind: "daily" | "missed" | "weekly"; onOpen: () => void }) => {
+  const data = {
+    daily: { title: "ReadSprout", body: "Olee is waiting to read with Aarav! Just 15 minutes today. 📚", time: "6:30 PM", icon: Bell },
+    missed: { title: "ReadSprout", body: "Olee missed you yesterday, but today is a fresh start! 💚", time: "9:00 AM", icon: Heart },
+    weekly: { title: "ReadSprout · Weekly", body: "Aarav read 5 of 7 days this week! Olee is growing strong. 🌱", time: "Sun 7:00 PM", icon: Calendar },
+  }[kind];
+  const Icon = data.icon;
+  return (
+    <div className="w-full h-full bg-gradient-to-b from-foreground/85 to-foreground/95 flex flex-col px-4 pt-4 relative overflow-hidden">
+      <div className="text-center text-background/90">
+        <p className="text-6xl font-display tracking-tight">9:41</p>
+        <p className="text-sm font-bold mt-1">Wednesday, May 6</p>
+      </div>
+
+      <div className="mt-8 bg-card/95 backdrop-blur rounded-3xl p-3.5 shadow-2xl animate-fade-in">
+        <div className="flex items-start gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0">
+            <Icon size={18} className="text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[11px] font-extrabold tracking-wide text-foreground">{data.title}</p>
+              <p className="text-[10px] text-muted-foreground font-semibold">{data.time}</p>
+            </div>
+            <p className="text-sm font-bold text-foreground mt-0.5 leading-snug">{data.body}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 bg-card/20 backdrop-blur rounded-2xl p-3 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
+          <Mail size={14} className="text-accent-foreground" />
+        </div>
+        <p className="text-xs font-bold text-background/80 flex-1">Mail · Newsletter</p>
+        <p className="text-[10px] text-background/60">8:14 AM</p>
+      </div>
+
+      <div className="mt-auto pb-8 flex flex-col items-center gap-3">
+        <button
+          onClick={onOpen}
+          className="w-full bg-card/95 backdrop-blur text-foreground font-extrabold py-3.5 rounded-2xl flex items-center justify-center gap-2 active:scale-[0.98]"
+        >
+          Tap to open ReadSprout <ArrowRight size={16} />
+        </button>
+        <div className="w-32 h-1 rounded-full bg-background/40" />
+      </div>
+    </div>
+  );
+};
+const NotifPreview = Notification_;
+
 export default Index;
