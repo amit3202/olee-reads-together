@@ -63,6 +63,7 @@ const Index = () => {
     setTab(t);
     if (t === "today") setScreen("today");
     if (t === "progress") setScreen("progress");
+    if (t === "settings") setScreen("settings");
   };
 
   const screens: { id: Screen; label: string }[] = [
