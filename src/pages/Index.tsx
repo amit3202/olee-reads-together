@@ -3,13 +3,18 @@ import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import {
   ArrowRight, ArrowLeft, Camera, Play, Pause, Flame, Star, BookOpen,
-  CheckCircle2, ChevronRight, ShieldCheck, Sparkles,
+  CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
+  User, Crown, LogOut, HelpCircle, ChevronLeft, Check, Calendar,
+  Heart, Pencil, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Screen =
-  | "splash" | "welcome" | "setup1" | "setup2" | "today"
-  | "timer" | "celebrate" | "progress" | "stories" | "story" | "missed";
+  | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today"
+  | "timer" | "celebrate" | "progress" | "progressDetails"
+  | "stories" | "story" | "storyRead" | "missed"
+  | "login" | "settings" | "editChild" | "subscription"
+  | "notifDaily" | "notifMissed" | "notifWeekly";
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
