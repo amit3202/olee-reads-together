@@ -146,12 +146,12 @@ const Index = () => {
             {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("storyRead")} />}
             {screen === "storyRead" && <StoryRead story={activeStory} onBack={() => setScreen("story")} onComplete={() => setScreen("celebrate")} />}
             {screen === "missed" && <Missed onNext={() => setScreen("today")} />}
-            {screen === "settings" && <Settings tab={tab} setTab={goTab} onEdit={() => setScreen("editChild")} onSubscribe={() => setScreen("subscription")} onLogout={() => setScreen("welcome")} />}
+            {screen === "settings" && <SettingsScreen tab={tab} setTab={goTab} onEdit={() => setScreen("editChild")} onSubscribe={() => setScreen("subscription")} onLogout={() => setScreen("welcome")} />}
             {screen === "editChild" && <EditChild onBack={() => setScreen("settings")} />}
-            {screen === "subscription" && <Subscription onBack={() => setScreen("settings")} />}
-            {screen === "notifDaily" && <Notification kind="daily" onOpen={() => setScreen("today")} />}
-            {screen === "notifMissed" && <Notification kind="missed" onOpen={() => setScreen("missed")} />}
-            {screen === "notifWeekly" && <Notification kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
+            {screen === "subscription" && <SubscriptionScreen onBack={() => setScreen("settings")} />}
+            {screen === "notifDaily" && <NotifPreview kind="daily" onOpen={() => setScreen("today")} />}
+            {screen === "notifMissed" && <NotifPreview kind="missed" onOpen={() => setScreen("missed")} />}
+            {screen === "notifWeekly" && <NotifPreview kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
           </div>
         </div>
       </div>
