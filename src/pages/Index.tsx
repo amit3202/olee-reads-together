@@ -132,16 +132,26 @@ const Index = () => {
 
           <div className="absolute inset-0 pt-8 animate-fade-in" key={screen}>
             {screen === "splash" && <Splash onNext={() => setScreen("welcome")} />}
-            {screen === "welcome" && <Welcome onNext={() => setScreen("setup1")} />}
+            {screen === "welcome" && <Welcome onNext={() => setScreen("setup1")} onLogin={() => setScreen("login")} />}
+            {screen === "login" && <Login onBack={() => setScreen("welcome")} onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "setup1" && <Setup1 onNext={() => setScreen("setup2")} onBack={() => setScreen("welcome")} />}
-            {screen === "setup2" && <Setup2 onNext={() => { setTab("today"); setScreen("today"); }} onBack={() => setScreen("setup1")} />}
+            {screen === "setup2" && <Setup2 onNext={() => setScreen("setupDone")} onBack={() => setScreen("setup1")} />}
+            {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} />}
-            {screen === "progress" && <Progress tab={tab} setTab={goTab} />}
+            {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} />}
+            {screen === "progressDetails" && <ProgressDetails onBack={() => setScreen("progress")} />}
             {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
-            {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("timer")} />}
+            {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("storyRead")} />}
+            {screen === "storyRead" && <StoryRead story={activeStory} onBack={() => setScreen("story")} onComplete={() => setScreen("celebrate")} />}
             {screen === "missed" && <Missed onNext={() => setScreen("today")} />}
+            {screen === "settings" && <Settings tab={tab} setTab={goTab} onEdit={() => setScreen("editChild")} onSubscribe={() => setScreen("subscription")} onLogout={() => setScreen("welcome")} />}
+            {screen === "editChild" && <EditChild onBack={() => setScreen("settings")} />}
+            {screen === "subscription" && <Subscription onBack={() => setScreen("settings")} />}
+            {screen === "notifDaily" && <Notification kind="daily" onOpen={() => setScreen("today")} />}
+            {screen === "notifMissed" && <Notification kind="missed" onOpen={() => setScreen("missed")} />}
+            {screen === "notifWeekly" && <Notification kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
           </div>
         </div>
       </div>
