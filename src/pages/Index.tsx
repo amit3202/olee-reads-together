@@ -204,7 +204,7 @@ const Splash = ({ onNext }: { onNext: () => void }) => (
   </button>
 );
 
-const Welcome = ({ onNext }: { onNext: () => void }) => (
+const Welcome = ({ onNext, onLogin }: { onNext: () => void; onLogin: () => void }) => (
   <div className="w-full h-full flex flex-col px-6 pt-2 pb-6">
     <div className="relative h-[260px] bg-primary-light rounded-3xl overflow-hidden flex items-end justify-center">
       <div className="absolute top-6 left-6 right-6 flex justify-center gap-2">
@@ -233,7 +233,7 @@ const Welcome = ({ onNext }: { onNext: () => void }) => (
 
     <div className="mt-auto space-y-3">
       <PrimaryBtn onClick={onNext}>Let's meet Olee <ArrowRight size={18} /></PrimaryBtn>
-      <OutlineBtn>I already have an account</OutlineBtn>
+      <OutlineBtn onClick={onLogin}>I already have an account</OutlineBtn>
     </div>
   </div>
 );
