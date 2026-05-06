@@ -9,13 +9,50 @@ import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "today"
-  | "timer" | "celebrate" | "progress" | "stories" | "missed";
+  | "timer" | "celebrate" | "progress" | "stories" | "story" | "missed";
+
+export type Story = {
+  t: string; time: number; moral: string; age: string;
+  bg: string; icon: string; summary: string; chars: string[]; lesson: string;
+};
+
+const STORIES: Story[] = [
+  {
+    t: "The lion and the mouse", time: 5, moral: "Kindness", age: "4-6",
+    bg: "#FCE3DD", icon: "#E8836B",
+    summary: "A tiny mouse promises to help a mighty lion one day. When the lion is caught in a hunter's net, the little mouse remembers — and chews him free.",
+    chars: ["Lion", "Mouse", "Hunter"],
+    lesson: "Even the smallest friend can make the biggest difference.",
+  },
+  {
+    t: "The thirsty crow", time: 4, moral: "Cleverness", age: "4-6",
+    bg: "#DDEAF7", icon: "#7AB8D9",
+    summary: "On a hot day, a thirsty crow finds a pot with just a little water at the bottom. He thinks, then drops pebbles in one by one until the water rises.",
+    chars: ["Crow", "Pebbles", "Pot"],
+    lesson: "A clever idea is better than giving up.",
+  },
+  {
+    t: "The boy who cried wolf", time: 6, moral: "Honesty", age: "5-7",
+    bg: "#DEF1E5", icon: "#5BAF85",
+    summary: "A young shepherd boy tricks his village by shouting 'Wolf!' just for fun. When a real wolf finally comes, no one believes him.",
+    chars: ["Shepherd boy", "Villagers", "Wolf"],
+    lesson: "When we tell the truth, people trust us.",
+  },
+  {
+    t: "The golden goose", time: 7, moral: "Generosity", age: "7-9",
+    bg: "#FCEFD2", icon: "#EF9F27",
+    summary: "A kind young man shares his last piece of bread with an old stranger. In return, he is given a goose with golden feathers — and a magical adventure begins.",
+    chars: ["Dummling", "Old man", "Golden goose"],
+    lesson: "Kindness shared comes back many times over.",
+  },
+];
 
 const PHONE = "relative mx-auto w-[360px] h-[760px] bg-background rounded-[40px] overflow-hidden shadow-[0_30px_80px_-20px_rgba(45,90,69,0.35)] border-[10px] border-foreground/90";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("splash");
   const [tab, setTab] = useState<"today" | "progress" | "settings">("today");
+  const [activeStory, setActiveStory] = useState<Story>(STORIES[0]);
 
   const goTab = (t: "today" | "progress" | "settings") => {
     setTab(t);
@@ -33,6 +70,7 @@ const Index = () => {
     { id: "celebrate", label: "Celebrate" },
     { id: "progress", label: "Progress" },
     { id: "stories", label: "Stories" },
+    { id: "story", label: "Story" },
     { id: "missed", label: "Missed" },
   ];
 
@@ -85,7 +123,8 @@ const Index = () => {
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "progress" && <Progress tab={tab} setTab={goTab} />}
-            {screen === "stories" && <Stories onBack={() => setScreen("today")} />}
+            {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
+            {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("timer")} />}
             {screen === "missed" && <Missed onNext={() => setScreen("today")} />}
           </div>
         </div>
@@ -529,14 +568,14 @@ const Progress = ({ tab, setTab }: any) => {
   );
 };
 
-const Stories = ({ onBack }: { onBack: () => void }) => {
+const Stories = ({ onBack, onOpen }: { onBack: () => void; onOpen: (s: Story) => void }) => {
   const [filter, setFilter] = useState("All");
-  const stories = [
-    { t: "The lion and the mouse", time: 5, moral: "Kindness", age: "4-6", bg: "#FCE3DD", icon: "#E8836B" },
-    { t: "The thirsty crow", time: 4, moral: "Cleverness", age: "4-6", bg: "#DDEAF7", icon: "#7AB8D9" },
-    { t: "The boy who cried wolf", time: 6, moral: "Honesty", age: "5-7", bg: "#DEF1E5", icon: "#5BAF85" },
-    { t: "The golden goose", time: 7, moral: "Generosity", age: "7-9", bg: "#FCEFD2", icon: "#EF9F27" },
-  ];
+  const filtered = STORIES.filter((s) => {
+    if (filter === "All") return true;
+    if (filter === "Age 4-6") return s.age === "4-6" || s.age === "5-7";
+    if (filter === "Age 7-9") return s.age === "7-9" || s.age === "5-7";
+    return true;
+  });
   return (
     <div className="w-full h-full flex flex-col">
       <div className="px-5 pt-2 pb-3 flex items-center gap-3">
@@ -562,8 +601,12 @@ const Stories = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 mt-4 pb-6 space-y-3 scrollbar-hide">
-        {stories.map((s, i) => (
-          <div key={i} className="bg-card border border-border rounded-2xl p-3 flex items-center gap-3 active:scale-[0.99] transition">
+        {filtered.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => onOpen(s)}
+            className="w-full text-left bg-card border border-border rounded-2xl p-3 flex items-center gap-3 active:scale-[0.99] transition"
+          >
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: s.bg }}>
               <BookOpen size={26} style={{ color: s.icon }} />
             </div>
@@ -576,12 +619,85 @@ const Stories = ({ onBack }: { onBack: () => void }) => {
             <span className="text-[10px] font-extrabold bg-primary-light text-primary px-2 py-1 rounded-full">
               {s.age}
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </div>
   );
 };
+
+const StoryDetail = ({
+  story,
+  onBack,
+  onStart,
+}: {
+  story: Story;
+  onBack: () => void;
+  onStart: () => void;
+}) => (
+  <div className="w-full h-full flex flex-col">
+    <div className="px-5 pt-2 pb-3 flex items-center justify-between">
+      <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+        <ArrowLeft size={18} />
+      </button>
+      <span className="text-[10px] font-extrabold tracking-wider text-primary bg-primary-light px-3 py-1.5 rounded-full">
+        AGE {story.age}
+      </span>
+      <div className="w-10" />
+    </div>
+
+    <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">
+      <div
+        className="relative h-44 rounded-3xl flex items-center justify-center overflow-hidden"
+        style={{ background: story.bg }}
+      >
+        <BookOpen size={68} style={{ color: story.icon }} strokeWidth={1.6} />
+        <div className="absolute -bottom-3 -right-2">
+          <Olee pose="books" expression="happy" size={96} />
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-display mt-4 leading-tight">{story.t}</h2>
+      <div className="mt-2 flex items-center gap-2 flex-wrap">
+        <span className="text-[11px] font-extrabold bg-accent-soft text-accent px-2.5 py-1 rounded-full flex items-center gap-1">
+          <Sparkles size={11} /> {story.moral}
+        </span>
+        <span className="text-[11px] font-bold text-muted-foreground">{story.time} min read</span>
+      </div>
+
+      <div className="mt-5 bg-card border border-border rounded-2xl p-4">
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">THE STORY</p>
+        <p className="text-sm text-foreground/85 mt-2 leading-relaxed">{story.summary}</p>
+      </div>
+
+      <div className="mt-3 bg-card border border-border rounded-2xl p-4">
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">YOU'LL MEET</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {story.chars.map((c) => (
+            <span key={c} className="text-xs font-bold bg-primary-light text-primary px-3 py-1.5 rounded-full">
+              {c}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 bg-accent-soft border-2 border-dashed border-accent/40 rounded-2xl p-4 flex items-start gap-3">
+        <Olee pose="thinking" size={56} />
+        <div>
+          <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE'S LITTLE LESSON</p>
+          <p className="text-sm font-bold text-foreground mt-1 leading-snug">{story.lesson}</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="px-5 pb-5">
+      <PrimaryBtn onClick={onStart}>
+        <Play size={18} fill="currentColor" /> Start {story.time}-minute read
+      </PrimaryBtn>
+    </div>
+  </div>
+);
+
 
 const Missed = ({ onNext }: { onNext: () => void }) => (
   <div className="w-full h-full flex flex-col items-center px-8 pt-12 pb-6 bg-gradient-to-b from-primary-light/40 to-background">
