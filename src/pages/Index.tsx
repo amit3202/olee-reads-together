@@ -513,7 +513,7 @@ const Celebrate = ({ onProgress, onDone }: any) => (
   </div>
 );
 
-const Progress = ({ tab, setTab }: any) => {
+const Progress = ({ tab, setTab, onDetails }: any) => {
   const days = [
     { d: "M", done: true }, { d: "T", done: true }, { d: "W", done: true },
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
