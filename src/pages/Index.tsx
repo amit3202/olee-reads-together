@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import {
