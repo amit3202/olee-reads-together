@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import {
@@ -184,25 +184,98 @@ const OutlineBtn = ({ children, onClick }: any) => (
 
 /* ---------- Screens ---------- */
 
-const Splash = ({ onNext }: { onNext: () => void }) => (
-  <button
-    onClick={onNext}
-    className="w-full h-full flex flex-col items-center justify-center gap-6 px-8 bg-gradient-to-b from-primary-light via-background to-background"
-  >
-    <div className="animate-float">
-      <Olee pose="wave" expression="excited" size={200} />
+const Splash = ({ onNext }: { onNext: () => void }) => {
+  const slides = [
+    {
+      pose: "wave" as const,
+      expression: "excited" as const,
+      title: "Meet Olee!",
+      sub: "Your child's reading buddy who grows with every story",
+      bg: "from-primary-light via-background to-background",
+    },
+    {
+      pose: "reading" as const,
+      expression: "happy" as const,
+      title: "Just 15 minutes a day",
+      sub: "Any book. A calm timer. Stars and streaks. That's it.",
+      bg: "from-accent-soft via-background to-background",
+    },
+    {
+      pose: "celebrate" as const,
+      expression: "proud" as const,
+      title: "Watch them fall in love with reading",
+      sub: "Join 10,000+ parents building readers, not screen time",
+      bg: "from-primary-light via-accent-soft to-background",
+    },
+  ];
+  const [i, setI] = useState(0);
+  const startX = useRef<number | null>(null);
+
+  const go = (dir: number) => {
+    setI((p) => Math.max(0, Math.min(slides.length - 1, p + dir)));
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (startX.current === null) return;
+    const dx = e.changedTouches[0].clientX - startX.current;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+    startX.current = null;
+  };
+
+  const s = slides[i];
+  const isLast = i === slides.length - 1;
+
+  return (
+    <div
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      className={`w-full h-full flex flex-col items-center justify-center gap-6 px-8 bg-gradient-to-b ${s.bg} relative`}
+    >
+      <button
+        onClick={() => setI(slides.length - 1)}
+        className={`absolute top-6 right-6 text-xs font-bold text-muted-foreground ${isLast ? "invisible" : ""}`}
+      >
+        Skip
+      </button>
+
+      <div className="animate-float" key={i}>
+        <Olee pose={s.pose} expression={s.expression} size={180} />
+      </div>
+      <div className="text-center max-w-[280px]">
+        <h1 className="text-[28px] leading-tight font-display text-foreground tracking-tight">{s.title}</h1>
+        <p className="text-foreground/70 mt-3 font-semibold text-sm leading-relaxed">{s.sub}</p>
+      </div>
+
+      <div className="absolute bottom-28 flex gap-1.5">
+        {slides.map((_, k) => (
+          <button
+            key={k}
+            onClick={() => setI(k)}
+            className={`h-2 rounded-full transition-all ${k === i ? "w-6 bg-primary" : "w-2 bg-primary/30"}`}
+          />
+        ))}
+      </div>
+
+      <div className="absolute bottom-10 left-8 right-8">
+        {isLast ? (
+          <PrimaryBtn onClick={onNext}>
+            Get Started <ArrowRight size={18} />
+          </PrimaryBtn>
+        ) : (
+          <button
+            onClick={() => go(1)}
+            className="w-full text-center text-sm font-bold text-primary py-3"
+          >
+            Next →
+          </button>
+        )}
+      </div>
     </div>
-    <div className="text-center">
-      <h1 className="text-5xl font-display text-foreground tracking-tight">ReadSprout</h1>
-      <p className="text-foreground/70 mt-3 font-semibold">Meet Olee, your reading buddy!</p>
-    </div>
-    <div className="absolute bottom-12 flex gap-1.5">
-      <span className="w-2 h-2 rounded-full bg-primary" />
-      <span className="w-2 h-2 rounded-full bg-primary/30" />
-      <span className="w-2 h-2 rounded-full bg-primary/30" />
-    </div>
-  </button>
-);
+  );
+};
 
 const Welcome = ({ onNext, onLogin }: { onNext: () => void; onLogin: () => void }) => (
   <div className="w-full h-full flex flex-col px-6 pt-2 pb-6">
