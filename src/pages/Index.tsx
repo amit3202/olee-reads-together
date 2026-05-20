@@ -1150,8 +1150,8 @@ const EditChild = ({ onBack }: { onBack: () => void }) => {
         ))}
       </div>
 
-      <button className="mt-5 w-full text-sm font-bold text-primary bg-primary-light py-3 rounded-2xl flex items-center justify-center gap-2">
-        <Sparkles size={14} /> Add another child (Premium)
+      <button className="mt-5 w-full text-sm font-bold text-foreground/70 bg-muted py-3 rounded-2xl flex items-center justify-center gap-2 border border-border">
+        <Crown size={14} /> Add another child · Premium
       </button>
 
       <div className="mt-auto pb-2">
