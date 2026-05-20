@@ -1023,7 +1023,7 @@ const StoryRead = ({ story, onBack, onComplete }: { story: Story; onBack: () => 
 
     <div className="px-5 pb-5 pt-3 border-t border-border bg-card">
       <PrimaryBtn onClick={onComplete}>
-        <Check size={18} /> Mark as complete
+        <Star size={18} fill="currentColor" /> I finished reading!
       </PrimaryBtn>
     </div>
   </div>
