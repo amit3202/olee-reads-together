@@ -416,10 +416,15 @@ const Setup2 = ({ onNext, onBack }: any) => {
 
 const Today = ({ onStart, onStories, tab, setTab }: any) => (
   <div className="w-full h-full flex flex-col">
-    <div className="px-6 pt-2 pb-2 flex items-start justify-between">
-      <div>
-        <p className="text-xs font-bold text-muted-foreground">Good evening, Priya</p>
-        <h2 className="text-xl font-display">Aarav's reading time</h2>
+    <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <div className="animate-float">
+          <Olee pose="wave" expression="excited" size={56} />
+        </div>
+        <div>
+          <p className="text-xs font-bold text-primary">Hi Aarav!</p>
+          <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+        </div>
       </div>
       <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
         <Flame size={16} className="text-accent" fill="currentColor" />
@@ -429,7 +434,7 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => (
 
     <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
       <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
-        <p className="text-[10px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
+        <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
         <div className="mt-2 flex items-center gap-2">
           <input
             placeholder="Type book name..."
@@ -442,31 +447,32 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => (
 
         <div className="mt-6 text-center">
           <p className="text-6xl font-display text-foreground tracking-tight">15:00</p>
-          <p className="text-xs font-bold text-muted-foreground mt-1">minutes of reading with Olee</p>
+          <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
         </div>
 
-        <div className="mt-5 flex justify-center">
+        <div className="mt-5 flex flex-col items-center gap-2">
           <button
             onClick={onStart}
-            className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
+            className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
           >
-            <Play size={32} fill="currentColor" className="ml-1" />
+            <Play size={36} fill="currentColor" className="ml-1" />
           </button>
+          <p className="text-sm font-extrabold text-primary">Start reading!</p>
         </div>
       </div>
 
       <button
         onClick={onStories}
-        className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border border-border active:scale-[0.99] transition"
+        className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
       >
         <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
           <BookOpen size={22} className="text-accent" />
         </div>
         <div className="flex-1 text-left">
           <p className="font-extrabold text-foreground">Olee's Story Corner</p>
-          <p className="text-xs text-muted-foreground">30 classic tales to explore</p>
+          <p className="text-xs text-muted-foreground">Pick a tale with Olee →</p>
         </div>
-        <ChevronRight size={18} className="text-muted-foreground" />
+        <ChevronRight size={18} className="text-accent" />
       </button>
     </div>
 
