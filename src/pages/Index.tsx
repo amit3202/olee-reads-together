@@ -966,8 +966,8 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
           </ul>
         </div>
 
-        <div className="mt-3 bg-accent-soft border-2 border-dashed border-accent/40 rounded-3xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-accent">REFLECTION JOURNAL</p>
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">REFLECTION NOTES</p>
           <div className="mt-3 space-y-2.5">
             {[
               { d: "May 6", t: "I liked when the tiger drank ALL the tea!" },
