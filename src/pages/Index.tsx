@@ -5,7 +5,7 @@ import {
   ArrowRight, ArrowLeft, Camera, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
   User, Crown, LogOut, HelpCircle, ChevronLeft, Check, Calendar,
-  Heart, Pencil, Clock,
+  Heart, Pencil, Clock, AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
