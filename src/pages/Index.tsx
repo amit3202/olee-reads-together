@@ -1173,45 +1173,49 @@ const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
     { t: "30 starter stories", free: true },
   ];
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-b from-accent-soft via-background to-background">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-5 pt-2 pb-2 flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
         </button>
-        <span className="text-[10px] font-extrabold tracking-wider text-accent bg-card px-3 py-1.5 rounded-full flex items-center gap-1">
+        <span className="text-[10px] font-extrabold tracking-wider text-foreground/70 bg-card border border-border px-3 py-1.5 rounded-full flex items-center gap-1">
           <Crown size={11} /> PREMIUM
         </span>
         <div className="w-10" />
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-4 scrollbar-hide">
-        <div className="flex justify-center mt-2">
-          <Olee pose="books" expression="excited" size={130} />
+        <div className="mt-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">SUBSCRIPTION</p>
+          <h2 className="text-2xl font-display mt-1 leading-tight text-foreground">
+            ReadSprout Premium
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+            Expand the Story Corner, unlock multiple child profiles, and access detailed weekly reports.
+          </p>
         </div>
-        <h2 className="text-2xl font-display text-center mt-2 leading-tight">
-          Unlock more stories <br />with <span className="text-accent">Olee Premium</span>
-        </h2>
-        <p className="text-sm text-muted-foreground text-center mt-2">No pressure — upgrade when you're ready.</p>
 
-        <div className="mt-5 bg-card border-2 border-accent rounded-3xl p-5 shadow-lg relative overflow-hidden">
-          <div className="absolute -top-3 right-5 bg-accent text-accent-foreground text-[10px] font-extrabold px-3 py-1 rounded-full">BEST VALUE</div>
-          <p className="text-xs font-extrabold text-muted-foreground tracking-wider">MONTHLY</p>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-4xl font-display">₹199</span>
+        <div className="mt-5 bg-card border border-border rounded-2xl p-5 relative">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-extrabold text-muted-foreground tracking-wider">MONTHLY PLAN</p>
+            <span className="text-[10px] font-bold bg-muted text-foreground/70 px-2 py-0.5 rounded-full">Best value</span>
+          </div>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span className="text-3xl font-display text-foreground">₹199</span>
             <span className="text-sm text-muted-foreground font-semibold">/ month</span>
           </div>
-          <p className="text-[11px] text-muted-foreground font-semibold mt-1">Cancel anytime · Secure payments via Razorpay</p>
+          <p className="text-[11px] text-muted-foreground font-semibold mt-1">Cancel anytime. Secure payments via Razorpay.</p>
 
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-4 space-y-2 border-t border-border pt-4">
             {features.map((f, i) => (
               <li key={i} className="flex items-center gap-2 text-sm">
                 <span className={cn(
                   "w-5 h-5 rounded-full flex items-center justify-center",
-                  f.free ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"
+                  f.free ? "bg-muted text-muted-foreground" : "bg-primary/90 text-primary-foreground"
                 )}>
                   <Check size={12} />
                 </span>
-                <span className={cn("font-bold", f.free ? "text-muted-foreground" : "text-foreground")}>{f.t}</span>
+                <span className={cn("font-semibold", f.free ? "text-muted-foreground" : "text-foreground")}>{f.t}</span>
                 {f.free && <span className="ml-auto text-[10px] text-muted-foreground">in free</span>}
               </li>
             ))}
@@ -1220,8 +1224,8 @@ const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <div className="px-5 pb-5">
-        <PrimaryBtn onClick={onBack}><Crown size={18} /> Start Premium</PrimaryBtn>
-        <p className="text-center text-[11px] text-muted-foreground font-semibold mt-2">Maybe later — Olee will be here.</p>
+        <PrimaryBtn onClick={onBack}>Start Premium</PrimaryBtn>
+        <p className="text-center text-[11px] text-muted-foreground font-semibold mt-2">Manage or cancel anytime in Settings.</p>
       </div>
     </div>
   );
