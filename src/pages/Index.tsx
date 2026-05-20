@@ -1047,39 +1047,40 @@ const SettingsScreen = ({ tab, setTab, onEdit, onSubscribe, onLogout }: any) => 
     </button>
   );
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-6 pt-2 pb-3">
-        <h2 className="text-xl font-display">Settings</h2>
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">ACCOUNT</p>
+        <h2 className="text-xl font-display text-foreground">Settings</h2>
       </div>
       <div className="flex-1 overflow-y-auto px-5 pb-24 scrollbar-hide space-y-4">
-        <div className="bg-card border border-border rounded-3xl p-4 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center">
-            <Olee pose="wave" size={42} />
+        <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-full bg-primary-light flex items-center justify-center text-primary font-display text-lg">
+            P
           </div>
           <div className="flex-1">
-            <p className="font-extrabold">Priya</p>
+            <p className="font-bold text-foreground">Priya</p>
             <p className="text-xs text-muted-foreground font-semibold">Free plan</p>
           </div>
-          <button onClick={onSubscribe} className="text-[10px] font-extrabold bg-accent text-accent-foreground px-2.5 py-1.5 rounded-full flex items-center gap-1">
-            <Crown size={11} /> UPGRADE
+          <button onClick={onSubscribe} className="text-[10px] font-bold bg-foreground text-background px-2.5 py-1.5 rounded-full flex items-center gap-1">
+            <Crown size={11} /> Upgrade
           </button>
         </div>
 
-        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+        <div className="bg-card border border-border rounded-2xl px-4 py-1">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">READING</p>
           <Row icon={Clock} label="Reminder time" value="6:30 PM" onClick={() => {}} />
           <Row icon={User} label="Aarav's profile" value="Age 6" onClick={onEdit} />
           <Row icon={Bell} label="Notifications" value="On" onClick={() => {}} />
         </div>
 
-        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+        <div className="bg-card border border-border rounded-2xl px-4 py-1">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">ACCOUNT</p>
-          <Row icon={Crown} label="Subscription" value="Free" onClick={onSubscribe} />
+          <Row icon={Crown} label="Manage subscription" value="Free" onClick={onSubscribe} />
           <Row icon={HelpCircle} label="Help & about" onClick={() => {}} />
           <Row icon={LogOut} label="Log out" onClick={onLogout} danger />
         </div>
 
-        <p className="text-center text-[11px] text-muted-foreground font-semibold">ReadSprout v1.0 · Made with 💚</p>
+        <p className="text-center text-[11px] text-muted-foreground font-semibold">ReadSprout v1.0</p>
       </div>
       <BottomNav active={tab} onChange={setTab} />
     </div>
