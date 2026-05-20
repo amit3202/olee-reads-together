@@ -153,6 +153,7 @@ const Index = () => {
             {screen === "notifDaily" && <NotifPreview kind="daily" onOpen={() => setScreen("today")} />}
             {screen === "notifMissed" && <NotifPreview kind="missed" onOpen={() => setScreen("missed")} />}
             {screen === "notifWeekly" && <NotifPreview kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
+            {screen === "formErrors" && <FormErrorStyles />}
           </div>
         </div>
       </div>
