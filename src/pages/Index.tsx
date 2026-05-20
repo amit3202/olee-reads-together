@@ -974,7 +974,7 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
               { d: "May 4", t: "Wilbur is the best pig ever." },
               { d: "May 2", t: "Matilda is so smart." },
             ].map((j, i) => (
-              <div key={i} className="bg-card rounded-xl p-3">
+              <div key={i} className="bg-muted/50 rounded-lg p-3">
                 <p className="text-[10px] font-bold text-muted-foreground">{j.d}</p>
                 <p className="text-sm font-bold text-foreground mt-0.5">"{j.t}"</p>
               </div>
