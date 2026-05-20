@@ -416,10 +416,15 @@ const Setup2 = ({ onNext, onBack }: any) => {
 
 const Today = ({ onStart, onStories, tab, setTab }: any) => (
   <div className="w-full h-full flex flex-col">
-    <div className="px-6 pt-2 pb-2 flex items-start justify-between">
-      <div>
-        <p className="text-xs font-bold text-muted-foreground">Good evening, Priya</p>
-        <h2 className="text-xl font-display">Aarav's reading time</h2>
+    <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <div className="animate-float">
+          <Olee pose="wave" expression="excited" size={56} />
+        </div>
+        <div>
+          <p className="text-xs font-bold text-primary">Hi Aarav!</p>
+          <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+        </div>
       </div>
       <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
         <Flame size={16} className="text-accent" fill="currentColor" />
@@ -429,7 +434,7 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => (
 
     <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
       <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
-        <p className="text-[10px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
+        <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
         <div className="mt-2 flex items-center gap-2">
           <input
             placeholder="Type book name..."
@@ -442,31 +447,32 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => (
 
         <div className="mt-6 text-center">
           <p className="text-6xl font-display text-foreground tracking-tight">15:00</p>
-          <p className="text-xs font-bold text-muted-foreground mt-1">minutes of reading with Olee</p>
+          <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
         </div>
 
-        <div className="mt-5 flex justify-center">
+        <div className="mt-5 flex flex-col items-center gap-2">
           <button
             onClick={onStart}
-            className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
+            className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
           >
-            <Play size={32} fill="currentColor" className="ml-1" />
+            <Play size={36} fill="currentColor" className="ml-1" />
           </button>
+          <p className="text-sm font-extrabold text-primary">Start reading!</p>
         </div>
       </div>
 
       <button
         onClick={onStories}
-        className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border border-border active:scale-[0.99] transition"
+        className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
       >
         <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
           <BookOpen size={22} className="text-accent" />
         </div>
         <div className="flex-1 text-left">
           <p className="font-extrabold text-foreground">Olee's Story Corner</p>
-          <p className="text-xs text-muted-foreground">30 classic tales to explore</p>
+          <p className="text-xs text-muted-foreground">Pick a tale with Olee →</p>
         </div>
-        <ChevronRight size={18} className="text-muted-foreground" />
+        <ChevronRight size={18} className="text-accent" />
       </button>
     </div>
 
@@ -592,59 +598,61 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
   ];
   const stats = [
-    { v: "8", l: "Day streak", c: "text-accent" },
-    { v: "24", l: "Stars earned", c: "text-accent" },
-    { v: "85%", l: "Consistency", c: "text-primary" },
-    { v: "1.2k", l: "Words read", c: "text-primary" },
+    { v: "8", l: "Day streak" },
+    { v: "24", l: "Stars earned" },
+    { v: "85%", l: "Consistency" },
+    { v: "1.2k", l: "Words read" },
   ];
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-6 pt-2 pb-3">
-        <h2 className="text-xl font-display">Aarav's progress</h2>
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">PROGRESS</p>
+        <h2 className="text-xl font-display text-foreground">Aarav's progress</h2>
       </div>
       <div className="flex-1 overflow-y-auto px-5 pb-24 scrollbar-hide">
-        <div className="bg-card border border-border rounded-3xl p-4 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-primary-soft flex items-center justify-center text-primary-foreground font-display text-lg">
+        <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-display text-base">
             A
           </div>
           <div className="flex-1">
-            <p className="font-extrabold">Aarav · 6</p>
+            <p className="font-bold text-foreground">Aarav · Age 6</p>
             <p className="text-xs text-muted-foreground font-semibold">Budding reader</p>
           </div>
-          <span className="text-[10px] font-bold bg-primary-light text-primary px-2.5 py-1 rounded-full flex items-center gap-1">
-            <CheckCircle2 size={12} /> Done today
+          <span className="text-[10px] font-bold bg-muted text-foreground/70 px-2.5 py-1 rounded-full flex items-center gap-1">
+            <CheckCircle2 size={12} className="text-primary" /> Read today
           </span>
         </div>
 
-        <div className="mt-3 bg-card border border-border rounded-3xl p-4">
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">THIS WEEK</p>
           <div className="mt-3 flex justify-between">
             {days.map((day, i) => (
               <div key={i} className="flex flex-col items-center gap-1.5">
                 <span className="text-[10px] font-bold text-muted-foreground">{day.d}</span>
                 <div className={cn(
-                  "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold",
-                  day.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-                  day.today && "ring-2 ring-foreground ring-offset-2 ring-offset-card"
+                  "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold",
+                  day.done ? "bg-primary/90 text-primary-foreground" : "bg-muted text-muted-foreground",
+                  day.today && "ring-2 ring-foreground/40 ring-offset-2 ring-offset-card"
                 )}>
                   {day.done ? <CheckCircle2 size={16} /> : "·"}
                 </div>
               </div>
             ))}
           </div>
+          <p className="text-[11px] text-muted-foreground font-semibold mt-3">5 of 7 days completed</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-3">
           {stats.map((s, i) => (
             <div key={i} className="bg-card border border-border rounded-2xl p-4">
-              <p className={cn("text-2xl font-display", s.c)}>{s.v}</p>
-              <p className="text-[11px] font-bold text-muted-foreground mt-1">{s.l}</p>
+              <p className="text-2xl font-display text-foreground">{s.v}</p>
+              <p className="text-[11px] font-bold text-muted-foreground mt-1 tracking-wide">{s.l}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-3 bg-card border border-border rounded-3xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">RECENT BOOKS</p>
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">READING LOG</p>
           <ul className="mt-2 divide-y divide-border">
             {[
               { n: "The Tiger Who Came to Tea", d: "Today" },
@@ -652,16 +660,16 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
               { n: "Charlotte's Web (ch. 3)", d: "2 days ago" },
             ].map((b, i) => (
               <li key={i} className="py-2.5 flex items-center gap-3">
-                <div className="w-8 h-10 rounded-md bg-primary-light flex items-center justify-center">
-                  <BookOpen size={14} className="text-primary" />
+                <div className="w-8 h-10 rounded-md bg-muted flex items-center justify-center">
+                  <BookOpen size={14} className="text-foreground/60" />
                 </div>
-                <p className="flex-1 text-sm font-bold">{b.n}</p>
+                <p className="flex-1 text-sm font-semibold text-foreground">{b.n}</p>
                 <p className="text-[11px] text-muted-foreground font-semibold">{b.d}</p>
               </li>
             ))}
           </ul>
-          <button onClick={onDetails} className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-extrabold text-primary py-2">
-            See full history <ChevronRight size={14} />
+          <button onClick={onDetails} className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-bold text-foreground/70 py-2 border-t border-border pt-3">
+            View full history <ChevronRight size={14} />
           </button>
         </div>
       </div>
@@ -911,7 +919,7 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
     return r < 7 ? "done" : r < 9 ? "miss" : "future";
   });
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-5 pt-2 pb-3 flex items-center gap-3">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
@@ -958,15 +966,15 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
           </ul>
         </div>
 
-        <div className="mt-3 bg-accent-soft border-2 border-dashed border-accent/40 rounded-3xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-accent">REFLECTION JOURNAL</p>
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">REFLECTION NOTES</p>
           <div className="mt-3 space-y-2.5">
             {[
               { d: "May 6", t: "I liked when the tiger drank ALL the tea!" },
               { d: "May 4", t: "Wilbur is the best pig ever." },
               { d: "May 2", t: "Matilda is so smart." },
             ].map((j, i) => (
-              <div key={i} className="bg-card rounded-xl p-3">
+              <div key={i} className="bg-muted/50 rounded-lg p-3">
                 <p className="text-[10px] font-bold text-muted-foreground">{j.d}</p>
                 <p className="text-sm font-bold text-foreground mt-0.5">"{j.t}"</p>
               </div>
@@ -1017,7 +1025,7 @@ const StoryRead = ({ story, onBack, onComplete }: { story: Story; onBack: () => 
 
     <div className="px-5 pb-5 pt-3 border-t border-border bg-card">
       <PrimaryBtn onClick={onComplete}>
-        <Check size={18} /> Mark as complete
+        <Star size={18} fill="currentColor" /> I finished reading!
       </PrimaryBtn>
     </div>
   </div>
@@ -1039,39 +1047,40 @@ const SettingsScreen = ({ tab, setTab, onEdit, onSubscribe, onLogout }: any) => 
     </button>
   );
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-6 pt-2 pb-3">
-        <h2 className="text-xl font-display">Settings</h2>
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">ACCOUNT</p>
+        <h2 className="text-xl font-display text-foreground">Settings</h2>
       </div>
       <div className="flex-1 overflow-y-auto px-5 pb-24 scrollbar-hide space-y-4">
-        <div className="bg-card border border-border rounded-3xl p-4 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center">
-            <Olee pose="wave" size={42} />
+        <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-full bg-primary-light flex items-center justify-center text-primary font-display text-lg">
+            P
           </div>
           <div className="flex-1">
-            <p className="font-extrabold">Priya</p>
+            <p className="font-bold text-foreground">Priya</p>
             <p className="text-xs text-muted-foreground font-semibold">Free plan</p>
           </div>
-          <button onClick={onSubscribe} className="text-[10px] font-extrabold bg-accent text-accent-foreground px-2.5 py-1.5 rounded-full flex items-center gap-1">
-            <Crown size={11} /> UPGRADE
+          <button onClick={onSubscribe} className="text-[10px] font-bold bg-foreground text-background px-2.5 py-1.5 rounded-full flex items-center gap-1">
+            <Crown size={11} /> Upgrade
           </button>
         </div>
 
-        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+        <div className="bg-card border border-border rounded-2xl px-4 py-1">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">READING</p>
           <Row icon={Clock} label="Reminder time" value="6:30 PM" onClick={() => {}} />
           <Row icon={User} label="Aarav's profile" value="Age 6" onClick={onEdit} />
           <Row icon={Bell} label="Notifications" value="On" onClick={() => {}} />
         </div>
 
-        <div className="bg-card border border-border rounded-3xl px-4 py-1">
+        <div className="bg-card border border-border rounded-2xl px-4 py-1">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground pt-3">ACCOUNT</p>
-          <Row icon={Crown} label="Subscription" value="Free" onClick={onSubscribe} />
+          <Row icon={Crown} label="Manage subscription" value="Free" onClick={onSubscribe} />
           <Row icon={HelpCircle} label="Help & about" onClick={() => {}} />
           <Row icon={LogOut} label="Log out" onClick={onLogout} danger />
         </div>
 
-        <p className="text-center text-[11px] text-muted-foreground font-semibold">ReadSprout v1.0 · Made with 💚</p>
+        <p className="text-center text-[11px] text-muted-foreground font-semibold">ReadSprout v1.0</p>
       </div>
       <BottomNav active={tab} onChange={setTab} />
     </div>
@@ -1141,8 +1150,8 @@ const EditChild = ({ onBack }: { onBack: () => void }) => {
         ))}
       </div>
 
-      <button className="mt-5 w-full text-sm font-bold text-primary bg-primary-light py-3 rounded-2xl flex items-center justify-center gap-2">
-        <Sparkles size={14} /> Add another child (Premium)
+      <button className="mt-5 w-full text-sm font-bold text-foreground/70 bg-muted py-3 rounded-2xl flex items-center justify-center gap-2 border border-border">
+        <Crown size={14} /> Add another child · Premium
       </button>
 
       <div className="mt-auto pb-2">
@@ -1164,45 +1173,49 @@ const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
     { t: "30 starter stories", free: true },
   ];
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-b from-accent-soft via-background to-background">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-5 pt-2 pb-2 flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
         </button>
-        <span className="text-[10px] font-extrabold tracking-wider text-accent bg-card px-3 py-1.5 rounded-full flex items-center gap-1">
+        <span className="text-[10px] font-extrabold tracking-wider text-foreground/70 bg-card border border-border px-3 py-1.5 rounded-full flex items-center gap-1">
           <Crown size={11} /> PREMIUM
         </span>
         <div className="w-10" />
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 pb-4 scrollbar-hide">
-        <div className="flex justify-center mt-2">
-          <Olee pose="books" expression="excited" size={130} />
+        <div className="mt-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">SUBSCRIPTION</p>
+          <h2 className="text-2xl font-display mt-1 leading-tight text-foreground">
+            ReadSprout Premium
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+            Expand the Story Corner, unlock multiple child profiles, and access detailed weekly reports.
+          </p>
         </div>
-        <h2 className="text-2xl font-display text-center mt-2 leading-tight">
-          Unlock more stories <br />with <span className="text-accent">Olee Premium</span>
-        </h2>
-        <p className="text-sm text-muted-foreground text-center mt-2">No pressure — upgrade when you're ready.</p>
 
-        <div className="mt-5 bg-card border-2 border-accent rounded-3xl p-5 shadow-lg relative overflow-hidden">
-          <div className="absolute -top-3 right-5 bg-accent text-accent-foreground text-[10px] font-extrabold px-3 py-1 rounded-full">BEST VALUE</div>
-          <p className="text-xs font-extrabold text-muted-foreground tracking-wider">MONTHLY</p>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-4xl font-display">₹199</span>
+        <div className="mt-5 bg-card border border-border rounded-2xl p-5 relative">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-extrabold text-muted-foreground tracking-wider">MONTHLY PLAN</p>
+            <span className="text-[10px] font-bold bg-muted text-foreground/70 px-2 py-0.5 rounded-full">Best value</span>
+          </div>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span className="text-3xl font-display text-foreground">₹199</span>
             <span className="text-sm text-muted-foreground font-semibold">/ month</span>
           </div>
-          <p className="text-[11px] text-muted-foreground font-semibold mt-1">Cancel anytime · Secure payments via Razorpay</p>
+          <p className="text-[11px] text-muted-foreground font-semibold mt-1">Cancel anytime. Secure payments via Razorpay.</p>
 
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-4 space-y-2 border-t border-border pt-4">
             {features.map((f, i) => (
               <li key={i} className="flex items-center gap-2 text-sm">
                 <span className={cn(
                   "w-5 h-5 rounded-full flex items-center justify-center",
-                  f.free ? "bg-muted text-muted-foreground" : "bg-accent text-accent-foreground"
+                  f.free ? "bg-muted text-muted-foreground" : "bg-primary/90 text-primary-foreground"
                 )}>
                   <Check size={12} />
                 </span>
-                <span className={cn("font-bold", f.free ? "text-muted-foreground" : "text-foreground")}>{f.t}</span>
+                <span className={cn("font-semibold", f.free ? "text-muted-foreground" : "text-foreground")}>{f.t}</span>
                 {f.free && <span className="ml-auto text-[10px] text-muted-foreground">in free</span>}
               </li>
             ))}
@@ -1211,8 +1224,8 @@ const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <div className="px-5 pb-5">
-        <PrimaryBtn onClick={onBack}><Crown size={18} /> Start Premium</PrimaryBtn>
-        <p className="text-center text-[11px] text-muted-foreground font-semibold mt-2">Maybe later — Olee will be here.</p>
+        <PrimaryBtn onClick={onBack}>Start Premium</PrimaryBtn>
+        <p className="text-center text-[11px] text-muted-foreground font-semibold mt-2">Manage or cancel anytime in Settings.</p>
       </div>
     </div>
   );
