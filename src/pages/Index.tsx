@@ -14,7 +14,7 @@ type Screen =
   | "timer" | "celebrate" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed"
   | "login" | "settings" | "editChild" | "subscription"
-  | "notifDaily" | "notifMissed" | "notifWeekly";
+  | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors";
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
@@ -88,6 +88,7 @@ const Index = () => {
     { id: "notifDaily", label: "18. Notif daily" },
     { id: "notifMissed", label: "19. Notif missed" },
     { id: "notifWeekly", label: "20. Notif weekly" },
+    { id: "formErrors", label: "21. Form errors" },
   ];
 
   return (
@@ -1282,5 +1283,122 @@ const Notification_ = ({ kind, onOpen }: { kind: "daily" | "missed" | "weekly"; 
   );
 };
 const NotifPreview = Notification_;
+
+/* ---------- Form Error Reference ---------- */
+const FormErrorStyles = () => {
+  const errorInputBase =
+    "bg-card border-2 rounded-2xl px-4 py-3.5 font-semibold outline-none transition";
+  const errorBorder = "border-destructive focus:border-destructive focus:ring-4 focus:ring-destructive/15";
+  const normalBorder = "border-border focus:border-primary focus:ring-4 focus:ring-primary/15";
+
+  return (
+    <div className="w-full h-full flex flex-col px-6 pt-2 pb-6 overflow-y-auto scrollbar-hide">
+      <h2 className="text-2xl font-display mt-4">Form Errors</h2>
+      <p className="text-sm text-muted-foreground mt-1">
+        Reusable field error patterns for signup, login &amp; more.
+      </p>
+
+      {/* 1. Text field with inline error */}
+      <div className="mt-6">
+        <label className="text-xs font-bold text-destructive">CHILD'S NAME</label>
+        <input
+          defaultValue=""
+          placeholder="Enter name"
+          className={cn(errorInputBase, errorBorder, "w-full mt-2")}
+        />
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <AlertCircle size={14} className="text-destructive shrink-0" />
+          <p className="text-sm font-medium text-destructive">Name is required</p>
+        </div>
+      </div>
+
+      {/* 2. Email field with inline error */}
+      <div className="mt-6">
+        <label className="text-xs font-bold text-destructive">EMAIL</label>
+        <input
+          type="email"
+          defaultValue="priya@example"
+          className={cn(errorInputBase, errorBorder, "w-full mt-2")}
+        />
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <AlertCircle size={14} className="text-destructive shrink-0" />
+          <p className="text-sm font-medium text-destructive">Please enter a valid email address</p>
+        </div>
+      </div>
+
+      {/* 3. Valid field (for contrast) */}
+      <div className="mt-6">
+        <label className="text-xs font-bold text-foreground/70">PHONE</label>
+        <input
+          type="tel"
+          defaultValue="+91 98765 43210"
+          className={cn(errorInputBase, normalBorder, "w-full mt-2")}
+        />
+        <p className="text-[11px] text-muted-foreground font-semibold mt-2">
+          Looks good — we'll send a one-time code.
+        </p>
+      </div>
+
+      {/* 4. Common form-level error banner */}
+      <div className="mt-6 bg-destructive/5 border-2 border-destructive/30 rounded-2xl p-4 flex items-start gap-3">
+        <AlertCircle size={18} className="text-destructive shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-bold text-destructive">Something went wrong</p>
+          <p className="text-sm text-destructive/80 mt-0.5">
+            We couldn't create your account. Please check your details and try again.
+          </p>
+        </div>
+      </div>
+
+      {/* 5. Multiple field group error */}
+      <div className="mt-6 bg-destructive/5 border-2 border-dashed border-destructive/30 rounded-2xl p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <AlertCircle size={16} className="text-destructive" />
+          <p className="text-sm font-bold text-destructive">Please fix 2 fields below</p>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-bold text-destructive">PASSWORD</label>
+            <input
+              type="password"
+              defaultValue="123"
+              className={cn(errorInputBase, errorBorder, "w-full mt-1.5")}
+            />
+            <p className="text-sm font-medium text-destructive mt-1">Must be at least 8 characters</p>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-destructive">CONFIRM PASSWORD</label>
+            <input
+              type="password"
+              defaultValue="1234"
+              className={cn(errorInputBase, errorBorder, "w-full mt-1.5")}
+            />
+            <p className="text-sm font-medium text-destructive mt-1">Passwords do not match</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 6. Inline field + icon combo */}
+      <div className="mt-6">
+        <label className="text-xs font-bold text-foreground/70">INVITE CODE (OPTIONAL)</label>
+        <div className="relative mt-2">
+          <input
+            defaultValue="WRONG1"
+            className={cn(errorInputBase, errorBorder, "w-full pr-10")}
+          />
+          <AlertCircle size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive" />
+        </div>
+        <p className="text-sm font-medium text-destructive mt-1.5">This invite code is invalid or expired</p>
+      </div>
+
+      <div className="mt-8 p-4 bg-primary-light rounded-2xl">
+        <p className="text-xs font-extrabold tracking-wider text-primary uppercase mb-2">How to use</p>
+        <p className="text-sm text-foreground/80 leading-relaxed">
+          Copy the <code className="bg-card px-1.5 py-0.5 rounded text-xs font-bold">errorInputBase</code> + <code className="bg-card px-1.5 py-0.5 rounded text-xs font-bold">errorBorder</code> classes for any errored field. Use <code className="bg-card px-1.5 py-0.5 rounded text-xs font-bold">text-destructive</code> for labels and messages. Use the banner pattern for form-level errors.
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default Index;
