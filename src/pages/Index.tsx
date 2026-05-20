@@ -598,59 +598,61 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
   ];
   const stats = [
-    { v: "8", l: "Day streak", c: "text-accent" },
-    { v: "24", l: "Stars earned", c: "text-accent" },
-    { v: "85%", l: "Consistency", c: "text-primary" },
-    { v: "1.2k", l: "Words read", c: "text-primary" },
+    { v: "8", l: "Day streak" },
+    { v: "24", l: "Stars earned" },
+    { v: "85%", l: "Consistency" },
+    { v: "1.2k", l: "Words read" },
   ];
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-6 pt-2 pb-3">
-        <h2 className="text-xl font-display">Aarav's progress</h2>
+        <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">PROGRESS</p>
+        <h2 className="text-xl font-display text-foreground">Aarav's progress</h2>
       </div>
       <div className="flex-1 overflow-y-auto px-5 pb-24 scrollbar-hide">
-        <div className="bg-card border border-border rounded-3xl p-4 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-primary-soft flex items-center justify-center text-primary-foreground font-display text-lg">
+        <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-display text-base">
             A
           </div>
           <div className="flex-1">
-            <p className="font-extrabold">Aarav · 6</p>
+            <p className="font-bold text-foreground">Aarav · Age 6</p>
             <p className="text-xs text-muted-foreground font-semibold">Budding reader</p>
           </div>
-          <span className="text-[10px] font-bold bg-primary-light text-primary px-2.5 py-1 rounded-full flex items-center gap-1">
-            <CheckCircle2 size={12} /> Done today
+          <span className="text-[10px] font-bold bg-muted text-foreground/70 px-2.5 py-1 rounded-full flex items-center gap-1">
+            <CheckCircle2 size={12} className="text-primary" /> Read today
           </span>
         </div>
 
-        <div className="mt-3 bg-card border border-border rounded-3xl p-4">
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">THIS WEEK</p>
           <div className="mt-3 flex justify-between">
             {days.map((day, i) => (
               <div key={i} className="flex flex-col items-center gap-1.5">
                 <span className="text-[10px] font-bold text-muted-foreground">{day.d}</span>
                 <div className={cn(
-                  "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold",
-                  day.done ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-                  day.today && "ring-2 ring-foreground ring-offset-2 ring-offset-card"
+                  "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold",
+                  day.done ? "bg-primary/90 text-primary-foreground" : "bg-muted text-muted-foreground",
+                  day.today && "ring-2 ring-foreground/40 ring-offset-2 ring-offset-card"
                 )}>
                   {day.done ? <CheckCircle2 size={16} /> : "·"}
                 </div>
               </div>
             ))}
           </div>
+          <p className="text-[11px] text-muted-foreground font-semibold mt-3">5 of 7 days completed</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-3">
           {stats.map((s, i) => (
             <div key={i} className="bg-card border border-border rounded-2xl p-4">
-              <p className={cn("text-2xl font-display", s.c)}>{s.v}</p>
-              <p className="text-[11px] font-bold text-muted-foreground mt-1">{s.l}</p>
+              <p className="text-2xl font-display text-foreground">{s.v}</p>
+              <p className="text-[11px] font-bold text-muted-foreground mt-1 tracking-wide">{s.l}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-3 bg-card border border-border rounded-3xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">RECENT BOOKS</p>
+        <div className="mt-3 bg-card border border-border rounded-2xl p-4">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">READING LOG</p>
           <ul className="mt-2 divide-y divide-border">
             {[
               { n: "The Tiger Who Came to Tea", d: "Today" },
@@ -658,16 +660,16 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
               { n: "Charlotte's Web (ch. 3)", d: "2 days ago" },
             ].map((b, i) => (
               <li key={i} className="py-2.5 flex items-center gap-3">
-                <div className="w-8 h-10 rounded-md bg-primary-light flex items-center justify-center">
-                  <BookOpen size={14} className="text-primary" />
+                <div className="w-8 h-10 rounded-md bg-muted flex items-center justify-center">
+                  <BookOpen size={14} className="text-foreground/60" />
                 </div>
-                <p className="flex-1 text-sm font-bold">{b.n}</p>
+                <p className="flex-1 text-sm font-semibold text-foreground">{b.n}</p>
                 <p className="text-[11px] text-muted-foreground font-semibold">{b.d}</p>
               </li>
             ))}
           </ul>
-          <button onClick={onDetails} className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-extrabold text-primary py-2">
-            See full history <ChevronRight size={14} />
+          <button onClick={onDetails} className="mt-3 w-full flex items-center justify-center gap-1 text-xs font-bold text-foreground/70 py-2 border-t border-border pt-3">
+            View full history <ChevronRight size={14} />
           </button>
         </div>
       </div>
