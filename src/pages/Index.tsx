@@ -919,7 +919,7 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
     return r < 7 ? "done" : r < 9 ? "miss" : "future";
   });
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-5 pt-2 pb-3 flex items-center gap-3">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
