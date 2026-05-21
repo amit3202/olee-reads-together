@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today"
-  | "timer" | "celebrate" | "progress" | "progressDetails"
+  | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed"
   | "login" | "settings" | "editChild" | "subscription"
   | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors";
