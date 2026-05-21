@@ -5,13 +5,13 @@ import {
   ArrowRight, ArrowLeft, Camera, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
   User, Crown, LogOut, HelpCircle, ChevronLeft, Check, Calendar,
-  Heart, Pencil, Clock, AlertCircle,
+  Heart, Pencil, Clock, AlertCircle, Plus, Minus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today"
-  | "timer" | "celebrate" | "progress" | "progressDetails"
+  | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed"
   | "login" | "settings" | "editChild" | "subscription"
   | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors";
@@ -75,6 +75,7 @@ const Index = () => {
     { id: "today", label: "6. Today" },
     { id: "timer", label: "7. Timer" },
     { id: "celebrate", label: "8. Celebrate" },
+    { id: "storyNote", label: "8b. Story note" },
     { id: "missed", label: "9. Missed" },
     { id: "progress", label: "10. Dashboard" },
     { id: "progressDetails", label: "11. Details" },
@@ -140,7 +141,8 @@ const Index = () => {
             {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
-            {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} />}
+            {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
+            {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
             {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} />}
             {screen === "progressDetails" && <ProgressDetails onBack={() => setScreen("progress")} />}
             {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
@@ -416,71 +418,104 @@ const Setup2 = ({ onNext, onBack }: any) => {
   );
 };
 
-const Today = ({ onStart, onStories, tab, setTab }: any) => (
-  <div className="w-full h-full flex flex-col">
-    <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <div className="animate-float">
-          <Olee pose="wave" expression="excited" size={56} />
+const Today = ({ onStart, onStories, tab, setTab }: any) => {
+  const [duration, setDuration] = useState(15);
+  const dec = () => setDuration((d) => Math.max(15, d - 5));
+  const inc = () => setDuration((d) => Math.min(60, d + 5));
+  const mm = String(duration).padStart(2, "0");
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="animate-float">
+            <Olee pose="wave" expression="excited" size={56} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-primary">Hi Aarav!</p>
+            <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+          </div>
         </div>
-        <div>
-          <p className="text-xs font-bold text-primary">Hi Aarav!</p>
-          <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+        <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
+          <Flame size={16} className="text-accent" fill="currentColor" />
+          <span className="text-sm font-extrabold text-accent">7 days</span>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
-        <Flame size={16} className="text-accent" fill="currentColor" />
-        <span className="text-sm font-extrabold text-accent">7 days</span>
+
+      <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
+        <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
+          <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              placeholder="Type book name..."
+              className="flex-1 bg-primary-light border-2 border-dashed border-primary/40 rounded-xl px-3 py-2.5 text-sm font-semibold placeholder:text-primary/50 outline-none focus:bg-card"
+            />
+            <button className="w-10 h-10 rounded-xl bg-primary-light border-2 border-dashed border-primary/40 flex items-center justify-center text-primary">
+              <Camera size={18} />
+            </button>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-6xl font-display text-foreground tracking-tight">{mm}:00</p>
+            <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
+          </div>
+
+          {/* duration adjuster */}
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <button
+              onClick={dec}
+              disabled={duration <= 15}
+              aria-label="Decrease minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
+            >
+              <Minus size={18} />
+            </button>
+            <div className="flex items-center gap-1.5 bg-muted/60 px-3 py-1.5 rounded-full">
+              <Clock size={14} className="text-muted-foreground" />
+              <span className="text-xs font-extrabold text-foreground tracking-wide">{duration} MIN</span>
+            </div>
+            <button
+              onClick={inc}
+              disabled={duration >= 60}
+              aria-label="Increase minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
+            >
+              <Plus size={18} />
+            </button>
+          </div>
+          <p className="mt-1.5 text-[10px] font-bold text-muted-foreground text-center tracking-wider">
+            15 MIN MINIMUM · UP TO 60 MIN FOR LONGER BOOKS
+          </p>
+
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <button
+              onClick={onStart}
+              className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
+            >
+              <Play size={36} fill="currentColor" className="ml-1" />
+            </button>
+            <p className="text-sm font-extrabold text-primary">Start reading!</p>
+          </div>
+        </div>
+
+        <button
+          onClick={onStories}
+          className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
+            <BookOpen size={22} className="text-accent" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="font-extrabold text-foreground">Olee's Story Corner</p>
+            <p className="text-xs text-muted-foreground">Pick a tale with Olee →</p>
+          </div>
+          <ChevronRight size={18} className="text-accent" />
+        </button>
       </div>
+
+      <BottomNav active={tab} onChange={setTab} />
     </div>
-
-    <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
-      <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
-        <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
-        <div className="mt-2 flex items-center gap-2">
-          <input
-            placeholder="Type book name..."
-            className="flex-1 bg-primary-light border-2 border-dashed border-primary/40 rounded-xl px-3 py-2.5 text-sm font-semibold placeholder:text-primary/50 outline-none focus:bg-card"
-          />
-          <button className="w-10 h-10 rounded-xl bg-primary-light border-2 border-dashed border-primary/40 flex items-center justify-center text-primary">
-            <Camera size={18} />
-          </button>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-6xl font-display text-foreground tracking-tight">15:00</p>
-          <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
-        </div>
-
-        <div className="mt-5 flex flex-col items-center gap-2">
-          <button
-            onClick={onStart}
-            className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
-          >
-            <Play size={36} fill="currentColor" className="ml-1" />
-          </button>
-          <p className="text-sm font-extrabold text-primary">Start reading!</p>
-        </div>
-      </div>
-
-      <button
-        onClick={onStories}
-        className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
-      >
-        <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
-          <BookOpen size={22} className="text-accent" />
-        </div>
-        <div className="flex-1 text-left">
-          <p className="font-extrabold text-foreground">Olee's Story Corner</p>
-          <p className="text-xs text-muted-foreground">Pick a tale with Olee →</p>
-        </div>
-        <ChevronRight size={18} className="text-accent" />
-      </button>
-    </div>
-
-    <BottomNav active={tab} onChange={setTab} />
-  </div>
-);
+  );
+};
 
 const Timer = ({ onDone, onBack }: any) => {
   // Progress at ~31% (10:24 / 15:00)
@@ -543,7 +578,7 @@ const Timer = ({ onDone, onBack }: any) => {
   );
 };
 
-const Celebrate = ({ onProgress, onDone }: any) => (
+const Celebrate = ({ onProgress, onDone, onNote }: any) => (
   <div className="w-full h-full flex flex-col items-center px-6 pt-4 pb-6 overflow-y-auto scrollbar-hide">
     <Olee pose="celebrate" expression="excited" size={150} />
 
@@ -577,15 +612,21 @@ const Celebrate = ({ onProgress, onDone }: any) => (
       </div>
     </div>
 
-    <div className="mt-4 w-full relative bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 pr-16">
-      <div className="absolute -top-3 -right-2">
-        <Olee pose="thinking" size={68} />
+    <button
+      onClick={onNote}
+      className="mt-4 w-full bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
+    >
+      <div className="shrink-0">
+        <Olee pose="thinking" size={56} />
       </div>
-      <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
-      <p className="text-sm font-bold text-foreground mt-1 leading-snug">
-        What was the coolest thing in your story today?
-      </p>
-    </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
+        <p className="text-sm font-bold text-foreground mt-0.5 leading-snug">
+          What was the coolest thing in your story today?
+        </p>
+      </div>
+      <Pencil size={18} className="text-accent shrink-0" />
+    </button>
 
     <div className="w-full mt-auto space-y-2 pt-4">
       <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
@@ -593,6 +634,67 @@ const Celebrate = ({ onProgress, onDone }: any) => (
     </div>
   </div>
 );
+
+const StoryNote = ({ onBack, onSave }: any) => {
+  const [text, setText] = useState("");
+  const prompts = [
+    "My favorite part was...",
+    "The coolest character was...",
+    "It made me feel...",
+  ];
+  return (
+    <div className="w-full h-full flex flex-col px-6 pt-2 pb-6 bg-gradient-to-b from-accent-soft/60 to-background">
+      <div className="flex items-center justify-between">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <p className="text-[10px] font-extrabold tracking-wider text-accent">STORY NOTE</p>
+        <div className="w-10" />
+      </div>
+
+      <div className="mt-3 flex items-center gap-3">
+        <Olee pose="thinking" size={72} />
+        <div>
+          <h2 className="text-xl font-display leading-tight">Tell Olee about it!</h2>
+          <p className="text-xs font-semibold text-muted-foreground mt-0.5">
+            The coolest thing from your story today
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex-1 flex flex-col">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="It was the best when..."
+          className="flex-1 w-full bg-card border-2 border-dashed border-accent/40 rounded-2xl p-4 text-sm font-semibold placeholder:text-muted-foreground/70 outline-none focus:border-accent resize-none"
+          maxLength={280}
+        />
+        <div className="mt-1.5 flex items-center justify-between">
+          <div className="flex flex-wrap gap-1.5">
+            {prompts.map((p) => (
+              <button
+                key={p}
+                onClick={() => setText((t) => (t ? t : p + " "))}
+                className="text-[10px] font-bold text-accent bg-accent-soft px-2 py-1 rounded-full active:scale-95"
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <span className="text-[10px] font-bold text-muted-foreground">{text.length}/280</span>
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <PrimaryBtn onClick={onSave}>
+          <Check size={18} /> Save for Olee
+        </PrimaryBtn>
+        <OutlineBtn onClick={onBack}>Maybe later</OutlineBtn>
+      </div>
+    </div>
+  );
+};
 
 const Progress = ({ tab, setTab, onDetails }: any) => {
   const days = [
