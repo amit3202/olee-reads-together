@@ -578,7 +578,7 @@ const Timer = ({ onDone, onBack }: any) => {
   );
 };
 
-const Celebrate = ({ onProgress, onDone }: any) => (
+const Celebrate = ({ onProgress, onDone, onNote }: any) => (
   <div className="w-full h-full flex flex-col items-center px-6 pt-4 pb-6 overflow-y-auto scrollbar-hide">
     <Olee pose="celebrate" expression="excited" size={150} />
 
@@ -612,15 +612,21 @@ const Celebrate = ({ onProgress, onDone }: any) => (
       </div>
     </div>
 
-    <div className="mt-4 w-full relative bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 pr-16">
-      <div className="absolute -top-3 -right-2">
-        <Olee pose="thinking" size={68} />
+    <button
+      onClick={onNote}
+      className="mt-4 w-full bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
+    >
+      <div className="shrink-0">
+        <Olee pose="thinking" size={56} />
       </div>
-      <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
-      <p className="text-sm font-bold text-foreground mt-1 leading-snug">
-        What was the coolest thing in your story today?
-      </p>
-    </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
+        <p className="text-sm font-bold text-foreground mt-0.5 leading-snug">
+          What was the coolest thing in your story today?
+        </p>
+      </div>
+      <Pencil size={18} className="text-accent shrink-0" />
+    </button>
 
     <div className="w-full mt-auto space-y-2 pt-4">
       <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
@@ -628,6 +634,67 @@ const Celebrate = ({ onProgress, onDone }: any) => (
     </div>
   </div>
 );
+
+const StoryNote = ({ onBack, onSave }: any) => {
+  const [text, setText] = useState("");
+  const prompts = [
+    "My favorite part was...",
+    "The coolest character was...",
+    "It made me feel...",
+  ];
+  return (
+    <div className="w-full h-full flex flex-col px-6 pt-2 pb-6 bg-gradient-to-b from-accent-soft/60 to-background">
+      <div className="flex items-center justify-between">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
+          <ArrowLeft size={18} />
+        </button>
+        <p className="text-[10px] font-extrabold tracking-wider text-accent">STORY NOTE</p>
+        <div className="w-10" />
+      </div>
+
+      <div className="mt-3 flex items-center gap-3">
+        <Olee pose="thinking" size={72} />
+        <div>
+          <h2 className="text-xl font-display leading-tight">Tell Olee about it!</h2>
+          <p className="text-xs font-semibold text-muted-foreground mt-0.5">
+            The coolest thing from your story today
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex-1 flex flex-col">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="It was the best when..."
+          className="flex-1 w-full bg-card border-2 border-dashed border-accent/40 rounded-2xl p-4 text-sm font-semibold placeholder:text-muted-foreground/70 outline-none focus:border-accent resize-none"
+          maxLength={280}
+        />
+        <div className="mt-1.5 flex items-center justify-between">
+          <div className="flex flex-wrap gap-1.5">
+            {prompts.map((p) => (
+              <button
+                key={p}
+                onClick={() => setText((t) => (t ? t : p + " "))}
+                className="text-[10px] font-bold text-accent bg-accent-soft px-2 py-1 rounded-full active:scale-95"
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <span className="text-[10px] font-bold text-muted-foreground">{text.length}/280</span>
+        </div>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <PrimaryBtn onClick={onSave}>
+          <Check size={18} /> Save for Olee
+        </PrimaryBtn>
+        <OutlineBtn onClick={onBack}>Maybe later</OutlineBtn>
+      </div>
+    </div>
+  );
+};
 
 const Progress = ({ tab, setTab, onDetails }: any) => {
   const days = [
