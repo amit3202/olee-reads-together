@@ -698,7 +698,7 @@ const StoryNote = ({ onBack, onSave }: any) => {
   );
 };
 
-const Progress = ({ tab, setTab, onDetails }: any) => {
+const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
   const days = [
     { d: "M", done: true }, { d: "T", done: true }, { d: "W", done: true },
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
