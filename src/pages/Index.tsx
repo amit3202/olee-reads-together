@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import {
-  ArrowRight, ArrowLeft, Camera, Play, Pause, Flame, Star, BookOpen,
+  ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
   User, Crown, LogOut, HelpCircle, ChevronLeft, Check, Calendar,
   Heart, Pencil, Clock, AlertCircle, Plus, Minus,
