@@ -1524,4 +1524,158 @@ const FormErrorStyles = () => {
   );
 };
 
+/* ---------- Olee growth (22) ---------- */
+type OleeStage = {
+  key: string;
+  name: string;
+  tagline: string;
+  minStars: number;
+  pose: "wave" | "reading" | "books" | "celebrate" | "thinking" | "calm" | "peek";
+  ring: string;
+  badge: string;
+  accent: "leaf" | "spark" | "crown" | "cape" | "halo" | null;
+};
+
+const OLEE_STAGES: OleeStage[] = [
+  { key: "seed",   name: "Seedling Olee", tagline: "Just sprouted — every story helps me grow.", minStars: 0,   pose: "calm",      ring: "bg-primary/10",     badge: "from-primary-soft/40 to-primary-light",  accent: null },
+  { key: "sap",    name: "Sapling Olee",  tagline: "Reading buddy in training.",                  minStars: 10,  pose: "wave",      ring: "bg-primary/15",     badge: "from-primary-soft/60 to-primary-light",  accent: "leaf" },
+  { key: "bloom",  name: "Bloom Olee",    tagline: "Blossoming with every chapter.",              minStars: 25,  pose: "reading",   ring: "bg-accent/15",      badge: "from-accent-soft to-primary-light",      accent: "spark" },
+  { key: "super",  name: "Super Olee",    tagline: "Cape on. Imagination unlocked.",              minStars: 50,  pose: "celebrate", ring: "bg-accent/20",      badge: "from-accent-soft to-accent/20",          accent: "cape" },
+  { key: "awe",    name: "Awesome Olee",  tagline: "A storytelling legend with the golden crown.", minStars: 100, pose: "books",     ring: "bg-[#F4C542]/25",   badge: "from-[#FFF3D0] to-[#F4C542]/40",         accent: "crown" },
+  { key: "myth",   name: "Mythic Olee",   tagline: "Glowing with the wisdom of 200+ stories.",    minStars: 200, pose: "thinking",  ring: "bg-coral/20",       badge: "from-[#FCE3DD] to-coral/30",             accent: "halo" },
+];
+
+const OleeAvatar = ({ stage, size = 120 }: { stage: OleeStage; size?: number }) => (
+  <div className="relative grid place-items-center" style={{ width: size + 24, height: size + 24 }}>
+    <div className={cn("absolute inset-0 rounded-full", stage.ring)} />
+    {stage.accent === "halo" && (
+      <div className="absolute inset-2 rounded-full border-2 border-coral/40 animate-pulse" />
+    )}
+    {stage.accent === "crown" && (
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 text-[#EF9F27]">
+        <Crown size={26} fill="#F4C542" />
+      </div>
+    )}
+    {stage.accent === "cape" && (
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-10 bg-coral rounded-b-[40px] -z-0 opacity-90" style={{ transform: "translate(-50%, 30%)" }} />
+    )}
+    {stage.accent === "spark" && (
+      <>
+        <Sparkles size={14} className="absolute top-2 right-3 text-accent" />
+        <Sparkles size={10} className="absolute bottom-4 left-2 text-accent" />
+      </>
+    )}
+    {stage.accent === "leaf" && (
+      <div className="absolute top-1 right-2 w-3 h-3 rounded-full bg-primary-soft" />
+    )}
+    <Olee size={size} pose={stage.pose} />
+  </div>
+);
+
+const OleeGrowth = ({ onBack }: { onBack: () => void }) => {
+  const stars = 24;
+  const currentIdx = Math.max(0, OLEE_STAGES.findIndex((s, i) =>
+    stars >= s.minStars && (i === OLEE_STAGES.length - 1 || stars < OLEE_STAGES[i + 1].minStars)
+  ));
+  const current = OLEE_STAGES[currentIdx];
+  const next = OLEE_STAGES[currentIdx + 1];
+  const progress = next
+    ? Math.round(((stars - current.minStars) / (next.minStars - current.minStars)) * 100)
+    : 100;
+  const toNext = next ? next.minStars - stars : 0;
+
+  return (
+    <div className="w-full h-full flex flex-col bg-muted/30">
+      <div className="px-4 pt-2 pb-3 flex items-center gap-2">
+        <button onClick={onBack} className="w-9 h-9 rounded-full bg-card border border-border grid place-items-center">
+          <ChevronLeft size={18} />
+        </button>
+        <div>
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">AARAV'S BUDDY</p>
+          <h2 className="text-xl font-display text-foreground leading-tight">Olee's growth</h2>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-5 pb-8 scrollbar-hide">
+        {/* Hero */}
+        <div className={cn("rounded-3xl p-5 bg-gradient-to-br border border-primary/15", current.badge)}>
+          <div className="flex flex-col items-center text-center">
+            <OleeAvatar stage={current} size={140} />
+            <p className="mt-3 text-[10px] font-extrabold tracking-wider text-primary">STAGE {currentIdx + 1} OF {OLEE_STAGES.length}</p>
+            <h3 className="font-display text-2xl text-foreground">{current.name}</h3>
+            <p className="text-sm text-foreground/70 font-semibold mt-1 max-w-[260px]">{current.tagline}</p>
+          </div>
+
+          {next && (
+            <div className="mt-5 bg-card/80 backdrop-blur rounded-2xl p-3.5 border border-border">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-foreground">Next: {next.name}</p>
+                <span className="text-[11px] font-bold text-primary flex items-center gap-1">
+                  <Star size={12} fill="currentColor" /> {toNext} to go
+                </span>
+              </div>
+              <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-primary to-primary-soft transition-all" style={{ width: `${progress}%` }} />
+              </div>
+              <p className="text-[11px] text-muted-foreground font-semibold mt-2">{stars} / {next.minStars} stars</p>
+            </div>
+          )}
+        </div>
+
+        {/* Journey */}
+        <div className="mt-5">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground mb-3">THE GROWTH JOURNEY</p>
+          <div className="space-y-3">
+            {OLEE_STAGES.map((s, i) => {
+              const unlocked = i <= currentIdx;
+              const isCurrent = i === currentIdx;
+              return (
+                <div
+                  key={s.key}
+                  className={cn(
+                    "rounded-2xl p-3 flex items-center gap-3 border transition",
+                    isCurrent ? "bg-card border-primary shadow-[0_6px_20px_-12px_hsl(var(--primary)/0.6)]" :
+                    unlocked ? "bg-card border-border" :
+                    "bg-card/50 border-dashed border-border"
+                  )}
+                >
+                  <div className={cn("shrink-0 transition", !unlocked && "grayscale opacity-50")}>
+                    <OleeAvatar stage={s} size={56} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-display text-foreground text-base truncate">{s.name}</p>
+                      {isCurrent && (
+                        <span className="text-[9px] font-extrabold tracking-wider bg-primary text-primary-foreground px-1.5 py-0.5 rounded">NOW</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-semibold truncate">{s.tagline}</p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {unlocked ? (
+                      <CheckCircle2 size={18} className="text-primary inline" />
+                    ) : (
+                      <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
+                        <Star size={10} fill="currentColor" /> {s.minStars}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Tip */}
+        <div className="mt-5 p-4 bg-primary-light rounded-2xl border border-primary/10 flex gap-3">
+          <Heart size={18} className="text-coral shrink-0 mt-0.5" />
+          <p className="text-xs text-foreground/80 font-semibold leading-relaxed">
+            Every story Aarav finishes earns a star — and Olee grows along with him. Keep the streak alive to unlock the next form!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Index;
