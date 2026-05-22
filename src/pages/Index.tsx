@@ -5,7 +5,7 @@ import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
   User, Crown, LogOut, HelpCircle, ChevronLeft, Check, Calendar,
-  Heart, Pencil, Clock, AlertCircle, Plus, Minus,
+  Heart, Pencil, Clock, AlertCircle, Plus, Minus, Bookmark, Lightbulb,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -518,18 +518,31 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
   );
 };
 
+const READING_PROMPTS = [
+  { icon: "💭", t: "What might happen next?" },
+  { icon: "👀", t: "Picture the scene in your head." },
+  { icon: "❤️", t: "How is the character feeling?" },
+  { icon: "🔎", t: "Spot a word you don't know." },
+  { icon: "🗣️", t: "Read this page out loud!" },
+];
+
 const Timer = ({ onDone, onBack }: any) => {
   // Progress at ~31% (10:24 / 15:00)
   const progress = 0.31;
   const radius = 110;
   const circumference = 2 * Math.PI * radius;
-  // Position Olee on the ring
   const angle = -Math.PI / 2 + progress * 2 * Math.PI;
   const cx = 160 + radius * Math.cos(angle);
   const cy = 160 + radius * Math.sin(angle);
 
+  const [promptIdx, setPromptIdx] = useState(0);
+  const [pages, setPages] = useState(7);
+  const [tricky, setTricky] = useState(0);
+  const [bookmarked, setBookmarked] = useState(false);
+  const prompt = READING_PROMPTS[promptIdx];
+
   return (
-    <div className="w-full h-full flex flex-col items-center px-6 pt-2 bg-gradient-to-b from-primary-light/60 to-background">
+    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-4 bg-gradient-to-b from-primary-light/60 to-background overflow-y-auto scrollbar-hide">
       <div className="w-full flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
@@ -537,12 +550,31 @@ const Timer = ({ onDone, onBack }: any) => {
         <div className="text-center">
           <p className="text-[10px] font-extrabold tracking-wider text-primary">READING WITH OLEE</p>
           <p className="text-sm font-extrabold text-foreground">The Tiger Who Came to Tea</p>
+          <p className="text-[10px] font-bold text-muted-foreground">Chapter 2 · p.14</p>
         </div>
-        <div className="w-10" />
+        <button
+          onClick={() => setBookmarked((b) => !b)}
+          aria-label="Bookmark moment"
+          className={cn(
+            "w-10 h-10 rounded-full border flex items-center justify-center transition",
+            bookmarked ? "bg-accent text-accent-foreground border-accent" : "bg-card border-border text-muted-foreground"
+          )}
+        >
+          <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} />
+        </button>
       </div>
 
-      <div className="relative mt-8" style={{ width: 320, height: 320 }}>
-        <svg width="320" height="320" className="-rotate-90">
+      <div className="relative mt-4" style={{ width: 280, height: 280 }}>
+        <svg width="280" height="280" className="-rotate-90" viewBox="0 0 320 320">
+          {/* outer streak ring */}
+          <circle cx="160" cy="160" r={radius + 16} stroke="hsl(var(--accent) / 0.15)" strokeWidth="6" fill="none" />
+          <circle
+            cx="160" cy="160" r={radius + 16}
+            stroke="hsl(var(--accent))" strokeWidth="6" fill="none" strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * (radius + 16)}
+            strokeDashoffset={2 * Math.PI * (radius + 16) * (1 - 7 / 8)}
+          />
+          {/* main timer ring */}
           <circle cx="160" cy="160" r={radius} stroke="hsl(var(--primary-light))" strokeWidth="18" fill="none" />
           <circle
             cx="160" cy="160" r={radius}
@@ -553,28 +585,84 @@ const Timer = ({ onDone, onBack }: any) => {
             className="transition-all duration-700"
           />
         </svg>
-        {/* Olee on the ring */}
+        {/* Olee on the ring (animated) */}
         <div
-          className="absolute"
-          style={{ left: cx - 38, top: cy - 50 }}
+          className="absolute animate-float"
+          style={{ left: (cx - 38) * (280 / 320), top: (cy - 50) * (280 / 320) }}
         >
-          <Olee pose="reading" size={76} />
+          <Olee pose="reading" size={66} />
         </div>
         {/* time inside */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-6xl font-display text-foreground tracking-tight">10:24</p>
-          <p className="text-xs font-bold text-muted-foreground mt-1">remaining</p>
+          <p className="text-5xl font-display text-foreground tracking-tight">10:24</p>
+          <p className="text-[10px] font-bold text-muted-foreground mt-0.5">REMAINING</p>
+          <div className="mt-1 flex items-center gap-1 bg-accent-soft px-2 py-0.5 rounded-full">
+            <Flame size={11} className="text-accent" fill="currentColor" />
+            <span className="text-[10px] font-extrabold text-accent">Day 8 of streak</span>
+          </div>
         </div>
       </div>
 
+      {/* Rotating reading prompt */}
       <button
-        onClick={onDone}
-        className="mt-6 w-16 h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
+        onClick={() => setPromptIdx((i) => (i + 1) % READING_PROMPTS.length)}
+        className="mt-3 w-full bg-card border-2 border-primary/20 rounded-2xl px-4 py-2.5 flex items-center gap-3 active:scale-[0.99] transition"
       >
-        <Pause size={26} fill="currentColor" />
+        <div className="w-9 h-9 rounded-xl bg-primary-light flex items-center justify-center text-lg">
+          {prompt.icon}
+        </div>
+        <div className="flex-1 text-left min-w-0">
+          <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE WHISPERS</p>
+          <p className="text-sm font-bold text-foreground truncate">{prompt.t}</p>
+        </div>
+        <Lightbulb size={16} className="text-accent shrink-0" />
       </button>
 
-      <p className="mt-4 text-sm italic text-muted-foreground">Olee is cheering Aarav on...</p>
+      {/* Quick actions */}
+      <div className="mt-3 w-full grid grid-cols-3 gap-2">
+        <button
+          onClick={() => setPages((p) => p + 1)}
+          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
+        >
+          <BookOpen size={18} className="text-primary" />
+          <span className="text-[10px] font-extrabold text-foreground">+1 page</span>
+          <span className="text-[9px] font-bold text-muted-foreground">{pages} read</span>
+        </button>
+        <button
+          onClick={() => setTricky((t) => t + 1)}
+          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
+        >
+          <AlertCircle size={18} className="text-coral" />
+          <span className="text-[10px] font-extrabold text-foreground">Tricky word</span>
+          <span className="text-[9px] font-bold text-muted-foreground">{tricky} saved</span>
+        </button>
+        <button
+          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
+        >
+          <Plus size={18} className="text-accent" />
+          <span className="text-[10px] font-extrabold text-foreground">+5 min</span>
+          <span className="text-[9px] font-bold text-muted-foreground">stretch it</span>
+        </button>
+      </div>
+
+      {/* Pause / End */}
+      <div className="mt-3 flex items-center gap-4">
+        <button
+          onClick={onDone}
+          className="w-14 h-14 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
+          aria-label="Pause"
+        >
+          <Pause size={22} fill="currentColor" />
+        </button>
+        <button
+          onClick={onDone}
+          className="px-4 h-11 rounded-full bg-card border border-border text-xs font-extrabold text-muted-foreground active:scale-95"
+        >
+          End early
+        </button>
+      </div>
+
+      <p className="mt-2 text-xs italic text-muted-foreground">Olee is cheering Aarav on...</p>
     </div>
   );
 };
