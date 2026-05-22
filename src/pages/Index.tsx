@@ -90,6 +90,7 @@ const Index = () => {
     { id: "notifMissed", label: "19. Notif missed" },
     { id: "notifWeekly", label: "20. Notif weekly" },
     { id: "formErrors", label: "21. Form errors" },
+    { id: "oleeGrowth", label: "22. Olee growth" },
   ];
 
   return (
