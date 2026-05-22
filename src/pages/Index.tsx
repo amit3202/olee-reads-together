@@ -1036,11 +1036,81 @@ const SetupDone = ({ onNext }: { onNext: () => void }) => (
 );
 
 /* ---------- Progress details (11) ---------- */
+const HISTORY_START_DATE = new Date(2026, 2, 12);
+const HISTORY_TODAY = new Date(2026, 4, 22);
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MONTHLY_BOOKS: Record<string, { n: string; d: string; m: string }[]> = {
+  "2026-5": [
+    { n: "The Tiger Who Came to Tea", d: "May 6", m: "15 min" },
+    { n: "Where the Wild Things Are", d: "May 5", m: "15 min" },
+    { n: "Charlotte's Web (ch. 3)", d: "May 4", m: "18 min" },
+    { n: "The Gruffalo", d: "May 3", m: "12 min" },
+    { n: "Matilda (ch. 1)", d: "May 2", m: "15 min" },
+    { n: "The Very Hungry Caterpillar", d: "May 1", m: "10 min" },
+  ],
+  "2026-4": [
+    { n: "Charlotte's Web (ch. 2)", d: "Apr 28", m: "20 min" },
+    { n: "Charlotte's Web (ch. 1)", d: "Apr 27", m: "20 min" },
+    { n: "The BFG (ch. 4)", d: "Apr 22", m: "22 min" },
+    { n: "The BFG (ch. 3)", d: "Apr 21", m: "22 min" },
+    { n: "Stuart Little", d: "Apr 14", m: "18 min" },
+    { n: "Goodnight Moon", d: "Apr 8", m: "10 min" },
+  ],
+  "2026-3": [
+    { n: "Brown Bear, Brown Bear", d: "Mar 30", m: "10 min" },
+    { n: "Corduroy", d: "Mar 22", m: "12 min" },
+    { n: "The Snowy Day", d: "Mar 18", m: "12 min" },
+    { n: "Guess How Much I Love You", d: "Mar 12", m: "10 min" },
+  ],
+};
+const MONTHLY_NOTES: Record<string, { d: string; t: string }[]> = {
+  "2026-5": [
+    { d: "May 6", t: "I liked when the tiger drank ALL the tea!" },
+    { d: "May 4", t: "Wilbur is the best pig ever." },
+    { d: "May 2", t: "Matilda is so smart." },
+    { d: "May 1", t: "The caterpillar ate too much fruit!" },
+  ],
+  "2026-4": [
+    { d: "Apr 27", t: "Fern is so kind to Wilbur." },
+    { d: "Apr 21", t: "The BFG makes funny dreams." },
+    { d: "Apr 8", t: "I want to say goodnight to the moon too." },
+  ],
+  "2026-3": [
+    { d: "Mar 22", t: "Corduroy is cute with one button." },
+    { d: "Mar 12", t: "My first book! I love reading with mum." },
+  ],
+};
+
 const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
-  const cells = Array.from({ length: 30 }, (_, i) => {
-    const r = (i * 7) % 11;
-    return r < 7 ? "done" : r < 9 ? "miss" : "future";
-  });
+  const [view, setView] = useState({ y: HISTORY_TODAY.getFullYear(), m: HISTORY_TODAY.getMonth() });
+  const minV = { y: HISTORY_START_DATE.getFullYear(), m: HISTORY_START_DATE.getMonth() };
+  const maxV = { y: HISTORY_TODAY.getFullYear(), m: HISTORY_TODAY.getMonth() };
+  const canPrev = view.y > minV.y || (view.y === minV.y && view.m > minV.m);
+  const canNext = view.y < maxV.y || (view.y === maxV.y && view.m < maxV.m);
+  const shift = (dir: number) => {
+    const d = new Date(view.y, view.m + dir, 1);
+    setView({ y: d.getFullYear(), m: d.getMonth() });
+  };
+  const key = `${view.y}-${view.m}`;
+  const books = MONTHLY_BOOKS[key] ?? [];
+  const notes = MONTHLY_NOTES[key] ?? [];
+
+  const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
+  const firstDow = new Date(view.y, view.m, 1).getDay();
+  const cells: ({ day: number; status: "done" | "miss" | "future" | "pre" } | null)[] = [];
+  for (let i = 0; i < firstDow; i++) cells.push(null);
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(view.y, view.m, day);
+    let status: "done" | "miss" | "future" | "pre" = "future";
+    if (date < HISTORY_START_DATE) status = "pre";
+    else if (date > HISTORY_TODAY) status = "future";
+    else {
+      const r = (day * 7) % 11;
+      status = r < 7 ? "done" : "miss";
+    }
+    cells.push({ day, status });
+  }
+
   return (
     <div className="w-full h-full flex flex-col bg-muted/30">
       <div className="px-5 pt-2 pb-3 flex items-center gap-3">
@@ -1052,57 +1122,82 @@ const ProgressDetails = ({ onBack }: { onBack: () => void }) => {
       <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">
         <div className="bg-card border border-border rounded-3xl p-4">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">MAY 2026</p>
-            <div className="flex gap-3 text-[10px] font-bold">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-primary" /> Read</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-muted" /> Missed</span>
-            </div>
+            <button onClick={() => canPrev && shift(-1)} disabled={!canPrev}
+              className="w-8 h-8 rounded-full bg-muted flex items-center justify-center disabled:opacity-30" aria-label="Previous month">
+              <ChevronLeft size={16} />
+            </button>
+            <p className="text-sm font-display">{MONTH_NAMES[view.m]} {view.y}</p>
+            <button onClick={() => canNext && shift(1)} disabled={!canNext}
+              className="w-8 h-8 rounded-full bg-muted flex items-center justify-center disabled:opacity-30" aria-label="Next month">
+              <ChevronRight size={16} />
+            </button>
           </div>
-          <div className="mt-3 grid grid-cols-7 gap-1.5">
+          <div className="mt-3 flex gap-3 text-[10px] font-bold justify-center">
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-primary" /> Read</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-muted" /> Missed</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full border border-dashed border-border" /> —</span>
+          </div>
+          <div className="mt-3 grid grid-cols-7 gap-1 text-[9px] font-extrabold text-muted-foreground text-center">
+            {["S","M","T","W","T","F","S"].map((d, i) => <div key={i}>{d}</div>)}
+          </div>
+          <div className="mt-1 grid grid-cols-7 gap-1.5">
             {cells.map((c, i) => (
               <div key={i} className={cn(
                 "aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold",
-                c === "done" && "bg-primary text-primary-foreground",
-                c === "miss" && "bg-muted text-muted-foreground",
-                c === "future" && "bg-card border border-dashed border-border text-muted-foreground/50"
-              )}>{i + 1}</div>
+                !c && "opacity-0",
+                c?.status === "done" && "bg-primary text-primary-foreground",
+                c?.status === "miss" && "bg-muted text-muted-foreground",
+                c?.status === "future" && "bg-card border border-dashed border-border text-muted-foreground/50",
+                c?.status === "pre" && "bg-card border border-border/50 text-muted-foreground/40"
+              )}>{c?.day ?? ""}</div>
             ))}
           </div>
+          <p className="mt-3 text-[10px] text-muted-foreground text-center font-semibold">
+            Reading since {MONTH_NAMES[HISTORY_START_DATE.getMonth()]} {HISTORY_START_DATE.getDate()}, {HISTORY_START_DATE.getFullYear()}
+          </p>
         </div>
 
         <div className="mt-3 bg-card border border-border rounded-3xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">BOOK LOG</p>
-          <ul className="mt-2 divide-y divide-border">
-            {[
-              { n: "The Tiger Who Came to Tea", d: "May 6", m: "15 min" },
-              { n: "Where the Wild Things Are", d: "May 5", m: "15 min" },
-              { n: "Charlotte's Web (ch. 3)", d: "May 4", m: "18 min" },
-              { n: "The Gruffalo", d: "May 3", m: "12 min" },
-              { n: "Matilda (ch. 1)", d: "May 2", m: "15 min" },
-            ].map((b, i) => (
-              <li key={i} className="py-2.5 flex items-center gap-3">
-                <BookOpen size={16} className="text-primary" />
-                <p className="flex-1 text-sm font-bold truncate">{b.n}</p>
-                <p className="text-[11px] text-muted-foreground font-semibold">{b.d} · {b.m}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">BOOK LOG · {MONTH_NAMES[view.m].toUpperCase()}</p>
+            <span className="text-[10px] font-bold text-primary">{books.length} books</span>
+          </div>
+          {books.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-6 text-center font-semibold">No books logged this month.</p>
+          ) : (
+            <div className="max-h-56 overflow-y-auto pr-1">
+              <ul className="divide-y divide-border">
+                {books.map((b, i) => (
+                  <li key={i} className="py-2.5 flex items-center gap-3">
+                    <BookOpen size={16} className="text-primary shrink-0" />
+                    <p className="flex-1 text-sm font-bold truncate">{b.n}</p>
+                    <p className="text-[11px] text-muted-foreground font-semibold whitespace-nowrap">{b.d} · {b.m}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="mt-3 bg-card border border-border rounded-2xl p-4">
-          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">REFLECTION NOTES</p>
-          <div className="mt-3 space-y-2.5">
-            {[
-              { d: "May 6", t: "I liked when the tiger drank ALL the tea!" },
-              { d: "May 4", t: "Wilbur is the best pig ever." },
-              { d: "May 2", t: "Matilda is so smart." },
-            ].map((j, i) => (
-              <div key={i} className="bg-muted/50 rounded-lg p-3">
-                <p className="text-[10px] font-bold text-muted-foreground">{j.d}</p>
-                <p className="text-sm font-bold text-foreground mt-0.5">"{j.t}"</p>
-              </div>
-            ))}
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">REFLECTION NOTES · {MONTH_NAMES[view.m].toUpperCase()}</p>
+            <span className="text-[10px] font-bold text-primary">{notes.length}</span>
           </div>
+          {notes.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-6 text-center font-semibold">No reflections this month.</p>
+          ) : (
+            <div className="max-h-56 overflow-y-auto pr-1">
+              <div className="space-y-2.5">
+                {notes.map((j, i) => (
+                  <div key={i} className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-[10px] font-bold text-muted-foreground">{j.d}</p>
+                    <p className="text-sm font-bold text-foreground mt-0.5">"{j.t}"</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
