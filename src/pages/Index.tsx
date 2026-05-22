@@ -1680,4 +1680,184 @@ const OleeGrowth = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+/* ---------- Olee Library (23) — generic reference of every Olee variation ---------- */
+type LibVariant = {
+  key: string;
+  name: string;
+  usage: string;
+  pose: "wave" | "reading" | "books" | "celebrate" | "thinking" | "calm" | "peek";
+  expression?: "happy" | "excited" | "calm" | "proud";
+  ring?: string;
+  badge?: string;
+  accent?: "leaf" | "spark" | "crown" | "cape" | "halo" | "hat" | "glasses" | "bow" | "snow" | "heart" | null;
+  tag?: string;
+};
+
+const LIB_GROWTH: LibVariant[] = OLEE_STAGES.map((s) => ({
+  key: `growth-${s.key}`,
+  name: s.name,
+  usage: `Unlocks at ${s.minStars}★ — ${s.tagline}`,
+  pose: s.pose,
+  ring: s.ring,
+  badge: s.badge,
+  accent: s.accent,
+  tag: "Growth",
+}));
+
+const LIB_POSES: LibVariant[] = [
+  { key: "p-wave", name: "Waving Olee", usage: "Greeting, splash, onboarding hero", pose: "wave", expression: "happy", tag: "Pose" },
+  { key: "p-reading", name: "Reading Olee", usage: "Active reading sessions, timer screen", pose: "reading", expression: "happy", tag: "Pose" },
+  { key: "p-books", name: "Books Olee", usage: "Story library, browse screen", pose: "books", expression: "happy", tag: "Pose" },
+  { key: "p-celebrate", name: "Celebrating Olee", usage: "Completion, streaks, achievements", pose: "celebrate", expression: "excited", tag: "Pose" },
+  { key: "p-thinking", name: "Thinking Olee", usage: "Prompts, reflections, story notes", pose: "thinking", expression: "calm", tag: "Pose" },
+  { key: "p-calm", name: "Calm Olee", usage: "Bedtime, quiet states, loading", pose: "calm", expression: "calm", tag: "Pose" },
+  { key: "p-peek", name: "Peeking Olee", usage: "Tooltips, empty states, nudges", pose: "peek", expression: "happy", tag: "Pose" },
+];
+
+const LIB_EXPRESSIONS: LibVariant[] = [
+  { key: "e-happy", name: "Happy", usage: "Default friendly mood", pose: "wave", expression: "happy", tag: "Mood" },
+  { key: "e-excited", name: "Excited", usage: "Big wins, unlocks", pose: "celebrate", expression: "excited", tag: "Mood" },
+  { key: "e-calm", name: "Calm", usage: "Quiet moments, focus", pose: "calm", expression: "calm", tag: "Mood" },
+  { key: "e-proud", name: "Proud", usage: "Praise, milestone reached", pose: "books", expression: "proud", tag: "Mood" },
+];
+
+const LIB_THEMED: LibVariant[] = [
+  { key: "t-scholar", name: "Scholar Olee", usage: "Lessons, learning tips", pose: "reading", accent: "glasses", ring: "bg-primary/10", tag: "Themed" },
+  { key: "t-party", name: "Party Olee", usage: "Birthdays, special events", pose: "celebrate", accent: "hat", ring: "bg-coral/15", tag: "Themed" },
+  { key: "t-winter", name: "Winter Olee", usage: "Seasonal — December campaigns", pose: "calm", accent: "snow", ring: "bg-[#DDEAF7]/60", tag: "Themed" },
+  { key: "t-gift", name: "Gift Olee", usage: "Referrals, rewards, surprises", pose: "wave", accent: "bow", ring: "bg-accent/15", tag: "Themed" },
+  { key: "t-love", name: "Sweet Olee", usage: "Favorites, parent love notes", pose: "thinking", accent: "heart", ring: "bg-coral/15", tag: "Themed" },
+  { key: "t-sparkle", name: "Sparkle Olee", usage: "New features, premium teasers", pose: "books", accent: "spark", ring: "bg-accent/15", tag: "Themed" },
+  { key: "t-hero", name: "Hero Olee", usage: "Story-of-the-week, hero banners", pose: "celebrate", accent: "cape", ring: "bg-coral/15", tag: "Themed" },
+  { key: "t-royal", name: "Royal Olee", usage: "Top reader, leaderboard winner", pose: "books", accent: "crown", ring: "bg-[#F4C542]/25", tag: "Themed" },
+];
+
+const LibAvatar = ({ v, size = 96 }: { v: LibVariant; size?: number }) => (
+  <div className="relative grid place-items-center" style={{ width: size + 20, height: size + 20 }}>
+    {v.ring && <div className={cn("absolute inset-0 rounded-full", v.ring)} />}
+    {v.accent === "halo" && <div className="absolute inset-2 rounded-full border-2 border-coral/40 animate-pulse" />}
+    {v.accent === "crown" && (
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 text-[#EF9F27]">
+        <Crown size={22} fill="#F4C542" />
+      </div>
+    )}
+    {v.accent === "cape" && (
+      <div className="absolute bottom-2 left-1/2 w-[70%] h-8 bg-coral rounded-b-[40px] opacity-90" style={{ transform: "translate(-50%, 30%)" }} />
+    )}
+    {v.accent === "spark" && (
+      <>
+        <Sparkles size={12} className="absolute top-2 right-3 text-accent" />
+        <Sparkles size={9} className="absolute bottom-4 left-2 text-accent" />
+      </>
+    )}
+    {v.accent === "leaf" && <div className="absolute top-1 right-2 w-3 h-3 rounded-full bg-primary-soft" />}
+    {v.accent === "hat" && (
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10">
+        <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[16px] border-l-transparent border-r-transparent border-b-accent" />
+      </div>
+    )}
+    {v.accent === "glasses" && (
+      <div className="absolute z-10 flex gap-1" style={{ top: "38%" }}>
+        <div className="w-3.5 h-3.5 rounded-full border-2 border-foreground bg-card/60" />
+        <div className="w-3.5 h-3.5 rounded-full border-2 border-foreground bg-card/60" />
+      </div>
+    )}
+    {v.accent === "bow" && (
+      <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10 flex items-center">
+        <div className="w-2.5 h-2.5 rotate-45 bg-coral" />
+        <div className="w-1.5 h-1.5 rounded-full bg-coral mx-0.5" />
+        <div className="w-2.5 h-2.5 rotate-45 bg-coral" />
+      </div>
+    )}
+    {v.accent === "snow" && (
+      <>
+        <div className="absolute top-1 left-3 w-1.5 h-1.5 rounded-full bg-card border border-primary/20" />
+        <div className="absolute top-4 right-2 w-1 h-1 rounded-full bg-card border border-primary/20" />
+        <div className="absolute bottom-3 left-2 w-1 h-1 rounded-full bg-card border border-primary/20" />
+      </>
+    )}
+    {v.accent === "heart" && (
+      <Heart size={14} className="absolute top-1 right-2 text-coral" fill="currentColor" />
+    )}
+    <Olee size={size} pose={v.pose} expression={v.expression} />
+  </div>
+);
+
+const OleeLibrary = ({ onBack }: { onBack: () => void }) => {
+  const groups: { title: string; subtitle: string; items: LibVariant[] }[] = [
+    { title: "Growth stages", subtitle: "Unlocked as the child earns stars", items: LIB_GROWTH },
+    { title: "Poses", subtitle: "Body language for each context", items: LIB_POSES },
+    { title: "Expressions", subtitle: "Mood overlays — pair with any pose", items: LIB_EXPRESSIONS },
+    { title: "Themed", subtitle: "Seasonal & special-event variants", items: LIB_THEMED },
+  ];
+  const [filter, setFilter] = useState<string>("All");
+  const filters = ["All", ...groups.map((g) => g.title)];
+
+  return (
+    <div className="w-full h-full flex flex-col bg-muted/30">
+      <div className="px-4 pt-2 pb-3 flex items-center gap-2 border-b border-border/60">
+        <button onClick={onBack} className="w-9 h-9 rounded-full bg-card border border-border grid place-items-center">
+          <ChevronLeft size={18} />
+        </button>
+        <div className="flex-1">
+          <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">DESIGN REFERENCE</p>
+          <h2 className="text-xl font-display text-foreground leading-tight">Olee library</h2>
+        </div>
+        <span className="text-[10px] font-bold text-muted-foreground bg-card border border-border rounded-full px-2 py-1">
+          {LIB_GROWTH.length + LIB_POSES.length + LIB_EXPRESSIONS.length + LIB_THEMED.length} variants
+        </span>
+      </div>
+
+      <div className="px-4 py-3 flex gap-1.5 overflow-x-auto scrollbar-hide border-b border-border/60">
+        {filters.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={cn(
+              "px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition",
+              filter === f ? "bg-foreground text-background" : "bg-card text-foreground/70 border border-border"
+            )}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6 scrollbar-hide">
+        {groups
+          .filter((g) => filter === "All" || filter === g.title)
+          .map((g) => (
+            <section key={g.title}>
+              <div className="mb-2.5">
+                <p className="text-[10px] font-extrabold tracking-wider text-primary">{g.title.toUpperCase()}</p>
+                <p className="text-xs text-muted-foreground font-semibold">{g.subtitle}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {g.items.map((v) => (
+                  <div key={v.key} className="bg-card rounded-2xl p-3 border border-border flex flex-col items-center text-center">
+                    <div className={cn("w-full rounded-xl grid place-items-center py-2 bg-gradient-to-br", v.badge || "from-primary-light to-muted/40")}>
+                      <LibAvatar v={v} size={84} />
+                    </div>
+                    <p className="font-display text-sm text-foreground mt-2 leading-tight">{v.name}</p>
+                    <p className="text-[10px] text-muted-foreground font-semibold mt-1 leading-snug line-clamp-2">{v.usage}</p>
+                    <span className="mt-2 text-[9px] font-extrabold tracking-wider text-primary bg-primary-light px-2 py-0.5 rounded-full">
+                      {v.tag}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+
+        <div className="p-4 bg-primary-light rounded-2xl border border-primary/10 flex gap-3">
+          <Sparkles size={18} className="text-primary shrink-0 mt-0.5" />
+          <p className="text-xs text-foreground/80 font-semibold leading-relaxed">
+            Use this library when building new screens — pick a variant by context, not vibe. Growth stages drive progression; poses drive screen intent; themed variants are for campaigns and moments.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Index;
