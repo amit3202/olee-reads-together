@@ -448,14 +448,11 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
       <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
         <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
           <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2">
             <input
               placeholder="Type book name..."
-              className="flex-1 bg-primary-light border-2 border-dashed border-primary/40 rounded-xl px-3 py-2.5 text-sm font-semibold placeholder:text-primary/50 outline-none focus:bg-card"
+              className="w-full bg-primary-light border-2 border-dashed border-primary/40 rounded-xl px-3 py-2.5 text-sm font-semibold placeholder:text-primary/50 outline-none focus:bg-card"
             />
-            <button className="w-10 h-10 rounded-xl bg-primary-light border-2 border-dashed border-primary/40 flex items-center justify-center text-primary">
-              <Camera size={18} />
-            </button>
           </div>
 
           <div className="mt-6 text-center">
