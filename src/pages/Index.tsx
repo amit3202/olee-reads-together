@@ -730,7 +730,7 @@ const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
         </div>
 
         <button
-          onClick={() => { /* handled via picker, kept clickable */ }}
+          onClick={onOlee}
           className="mt-3 w-full bg-gradient-to-br from-primary-light to-accent-soft border border-primary/20 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
         >
           <div className="relative w-14 h-14 shrink-0">
