@@ -157,6 +157,7 @@ const Index = () => {
             {screen === "notifMissed" && <NotifPreview kind="missed" onOpen={() => setScreen("missed")} />}
             {screen === "notifWeekly" && <NotifPreview kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
             {screen === "formErrors" && <FormErrorStyles />}
+            {screen === "oleeGrowth" && <OleeGrowth onBack={() => setScreen("progress")} />}
           </div>
         </div>
       </div>
