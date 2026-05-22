@@ -729,6 +729,24 @@ const Progress = ({ tab, setTab, onDetails }: any) => {
           </span>
         </div>
 
+        <button
+          onClick={() => { /* handled via picker, kept clickable */ }}
+          className="mt-3 w-full bg-gradient-to-br from-primary-light to-accent-soft border border-primary/20 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
+        >
+          <div className="relative w-14 h-14 shrink-0">
+            <div className="absolute inset-0 rounded-full bg-primary/15 animate-float" />
+            <div className="absolute inset-0 grid place-items-center">
+              <Olee size={52} pose="wave" />
+            </div>
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE'S GROWTH</p>
+            <p className="font-display text-foreground text-base leading-tight">Sapling Olee</p>
+            <p className="text-[11px] text-muted-foreground font-semibold">1 more story to bloom</p>
+          </div>
+          <ChevronRight size={18} className="text-foreground/50" />
+        </button>
+
         <div className="mt-3 bg-card border border-border rounded-2xl p-4">
           <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground">THIS WEEK</p>
           <div className="mt-3 flex justify-between">
