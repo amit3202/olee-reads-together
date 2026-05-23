@@ -428,7 +428,7 @@ const Setup2 = ({ onNext, onBack }: any) => {
 };
 
 /* ---------- Olee growth stages ---------- */
-const OLEE_STAGES = [
+const OLEE_GROWTH = [
   { name: "Seedling Olee", min: 0, max: 10 },
   { name: "Sapling Olee", min: 11, max: 25 },
   { name: "Bloom Olee", min: 26, max: 50 },
@@ -437,10 +437,10 @@ const OLEE_STAGES = [
   { name: "Mighty Oak Olee", min: 201, max: 999 },
 ];
 const getStage = (stars: number) => {
-  const idx = OLEE_STAGES.findIndex((s) => stars >= s.min && stars <= s.max);
-  const i = idx === -1 ? OLEE_STAGES.length - 1 : idx;
-  const cur = OLEE_STAGES[i];
-  const next = OLEE_STAGES[i + 1];
+  const idx = OLEE_GROWTH.findIndex((s) => stars >= s.min && stars <= s.max);
+  const i = idx === -1 ? OLEE_GROWTH.length - 1 : idx;
+  const cur = OLEE_GROWTH[i];
+  const next = OLEE_GROWTH[i + 1];
   const progress = next ? (stars - cur.min) / (next.min - cur.min) : 1;
   const toNext = next ? next.min - stars : 0;
   return { cur, next, progress: Math.min(1, Math.max(0, progress)), toNext, index: i };
