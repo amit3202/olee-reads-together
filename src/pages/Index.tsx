@@ -148,6 +148,7 @@ const Index = () => {
             {screen === "setup2" && <Setup2 onNext={() => setScreen("setupDone")} onBack={() => setScreen("setup1")} />}
             {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
+            {screen === "todayV2" && <TodayV2 onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
