@@ -76,6 +76,7 @@ const Index = () => {
     { id: "setup2", label: "4. Child" },
     { id: "setupDone", label: "5. All set" },
     { id: "today", label: "6. Today" },
+    { id: "todayV2", label: "6b. Today V2" },
     { id: "timer", label: "7. Timer" },
     { id: "celebrate", label: "8. Celebrate" },
     { id: "storyNote", label: "8b. Story note" },
