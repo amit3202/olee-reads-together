@@ -10,12 +10,13 @@ import {
 import { cn } from "@/lib/utils";
 
 type Screen =
-  | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today"
+  | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today" | "todayV2"
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
   | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors"
   | "evolution" | "weeklyStory";
+
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
