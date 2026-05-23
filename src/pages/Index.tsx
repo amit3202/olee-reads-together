@@ -741,62 +741,97 @@ const Timer = ({ onDone, onBack }: any) => {
   );
 };
 
-const Celebrate = ({ onProgress, onDone, onNote }: any) => (
-  <div className="w-full h-full flex flex-col items-center px-6 pt-4 pb-6 overflow-y-auto scrollbar-hide">
-    <Olee pose="celebrate" expression="excited" size={150} />
+const EMOJI_REACTIONS = [
+  { e: "😄", label: "So fun!", bg: "#FCEFD2", expr: "excited" as const, reply: "Haha! Olee loves funny stories!" },
+  { e: "😮", label: "Surprising!", bg: "#DDEAF7", expr: "excited" as const, reply: "Whoa! Olee didn't see that coming!" },
+  { e: "😢", label: "Kind of sad", bg: "#EEEDFE", expr: "calm" as const, reply: "Aww, that's okay. Sad stories teach us a lot." },
+  { e: "🤯", label: "Mind-blowing!", bg: "#FCE3DD", expr: "excited" as const, reply: "WOW! Olee's mind is blown too! 🤯" },
+  { e: "😊", label: "Loved it!", bg: "#DEF1E5", expr: "proud" as const, reply: "Olee loved reading with you today! ❤️" },
+];
 
-    <div className="flex gap-2 mt-2">
-      {[0, 1, 2].map((i) => (
-        <Star
-          key={i}
-          size={36}
-          className="text-accent animate-pop"
-          fill="currentColor"
-          style={{ animationDelay: `${i * 150}ms` }}
-        />
-      ))}
-    </div>
+const Celebrate = ({ onProgress, onDone, onNote }: any) => {
+  const [picked, setPicked] = useState<number | null>(null);
+  const [expand, setExpand] = useState(false);
+  const adv = todayAdventure();
+  const reaction = picked !== null ? EMOJI_REACTIONS[picked] : null;
+  return (
+    <div className="w-full h-full flex flex-col items-center px-5 pt-3 pb-5 overflow-y-auto scrollbar-hide">
+      <Olee pose="celebrate" expression={reaction?.expr ?? "excited"} size={120} />
 
-    <h2 className="text-3xl font-display mt-4 text-center">You did it, Aarav!</h2>
-    <p className="text-sm text-muted-foreground text-center mt-2 leading-relaxed">
-      15 minutes of amazing reading. Olee is so proud! That's <span className="font-extrabold text-foreground">8 days in a row!</span>
-    </p>
-
-    <div className="grid grid-cols-2 gap-3 mt-5 w-full">
-      <div className="bg-primary-light rounded-2xl p-3 text-center">
-        <Flame size={20} className="text-accent mx-auto" fill="currentColor" />
-        <p className="text-2xl font-display mt-1">8</p>
-        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">DAY STREAK</p>
+      <div className="flex gap-2 mt-1">
+        {[0, 1, 2].map((i) => (
+          <Star key={i} size={28} className="text-accent animate-pop" fill="currentColor"
+            style={{ animationDelay: `${i * 150}ms` }} />
+        ))}
       </div>
-      <div className="bg-accent-soft rounded-2xl p-3 text-center">
-        <Star size={20} className="text-accent mx-auto" fill="currentColor" />
-        <p className="text-2xl font-display mt-1">24</p>
-        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">TOTAL STARS</p>
-      </div>
-    </div>
 
-    <button
-      onClick={onNote}
-      className="mt-4 w-full bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
-    >
-      <div className="shrink-0">
-        <Olee pose="thinking" size={56} />
+      <h2 className="text-2xl font-display mt-2 text-center">You did it, Aarav!</h2>
+      <p className="text-xs text-muted-foreground text-center mt-1 leading-relaxed">
+        You grew 1 flower today. <span className="font-extrabold text-foreground">8 days in a row!</span>
+      </p>
+
+      <div className="grid grid-cols-2 gap-2 mt-3 w-full">
+        <div className="bg-primary-light rounded-2xl p-2.5 text-center">
+          <Flame size={18} className="text-accent mx-auto" fill="currentColor" />
+          <p className="text-xl font-display">8</p>
+          <p className="text-[9px] font-bold text-muted-foreground tracking-wider">DAY STREAK</p>
+        </div>
+        <div className="bg-accent-soft rounded-2xl p-2.5 text-center">
+          <Star size={18} className="text-accent mx-auto" fill="currentColor" />
+          <p className="text-xl font-display">24</p>
+          <p className="text-[9px] font-bold text-muted-foreground tracking-wider">TOTAL STARS</p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
+
+      {/* Emoji reactions */}
+      <div className="w-full mt-4">
         <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
-        <p className="text-sm font-bold text-foreground mt-0.5 leading-snug">
-          What was the coolest thing in your story today?
-        </p>
-      </div>
-      <Pencil size={18} className="text-accent shrink-0" />
-    </button>
+        <p className="text-sm font-bold text-foreground mt-0.5">{adv.q}</p>
+        <div className="mt-2.5 flex gap-1.5 justify-between">
+          {EMOJI_REACTIONS.map((r, i) => (
+            <button
+              key={i}
+              onClick={() => setPicked(i)}
+              style={{ background: r.bg }}
+              className={cn(
+                "flex-1 rounded-2xl px-1 py-2 flex flex-col items-center gap-0.5 transition active:scale-95",
+                picked === i ? "ring-2 ring-primary scale-105" : picked !== null ? "opacity-50" : ""
+              )}
+            >
+              <span className="text-xl leading-none">{r.e}</span>
+              <span className="text-[9px] font-extrabold text-foreground leading-tight text-center">{r.label}</span>
+            </button>
+          ))}
+        </div>
 
-    <div className="w-full mt-auto space-y-2 pt-4">
-      <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
-      <OutlineBtn onClick={onDone}>Done for today</OutlineBtn>
+        {reaction && (
+          <div className="mt-3 bg-primary-light rounded-2xl rounded-tl-sm px-3 py-2">
+            <p className="text-xs font-bold text-foreground">{reaction.reply}</p>
+          </div>
+        )}
+
+        <button onClick={() => { setExpand((x) => !x); onNote && setTimeout(() => {}, 0); }}
+          className="mt-2 w-full text-[11px] font-extrabold text-accent text-center py-1.5">
+          Want to tell Olee more? →
+        </button>
+        {expand && (
+          <button onClick={onNote}
+            className="w-full bg-card border-2 border-dashed border-accent/40 rounded-2xl p-3 text-left">
+            <p className="text-[10px] font-bold text-muted-foreground">Open the note pad</p>
+            <p className="text-xs font-bold text-foreground">"My favorite part was..."</p>
+          </button>
+        )}
+      </div>
+
+      <div className="w-full mt-auto space-y-2 pt-4">
+        <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
+        <OutlineBtn onClick={onDone}>Done for today</OutlineBtn>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+
 
 const StoryNote = ({ onBack, onSave }: any) => {
   const [text, setText] = useState("");
