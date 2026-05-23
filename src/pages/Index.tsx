@@ -568,297 +568,155 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
   );
 };
 
-/* ---------- Garden Growth Timer (smooth continuous growth) ---------- */
-const FLOWER_COLORS = ["#F4A89B", "#EF9F27", "#E8836B", "#C9A0DC", "#F8C8D8"];
+/* ---------- Calm Companion Timer ---------- */
+const ENCOURAGEMENTS = [
+  "Olee is reading along with Aarav...",
+  "You're doing amazing!",
+  "Olee loves this story already.",
+  "Almost halfway there!",
+  "Olee can't wait to hear about the story!",
+  "Keep going — the best part is coming.",
+  "Olee is so proud of you.",
+];
 
-const GardenScene = ({ growth, blooms }: { growth: number; blooms: number[] }) => {
-  // viewBox 240 x 260. Soil baseline y = 230.
-  const BASE = 230;
-  const SEGMENT = 55; // vertical space each flower occupies on the stem
-  const currentSegmentH = SEGMENT * Math.min(1, growth);
-  const totalStemHeight = blooms.length * SEGMENT + currentSegmentH;
-  const stemTopY = BASE - totalStemHeight;
-
-  // helper: y position of a bloom (0-indexed from bottom)
-  const bloomY = (i: number) => BASE - (i + 1) * SEGMENT;
-
-  return (
-    <svg viewBox="0 0 240 260" className="w-full h-full">
-      <defs>
-        <radialGradient id="sky" cx="0.5" cy="0.2" r="0.9">
-          <stop offset="0%" stopColor="#EAF7F0" />
-          <stop offset="60%" stopColor="#F6FBF7" />
-          <stop offset="100%" stopColor="#FDFCF9" />
-        </radialGradient>
-        <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#5BAF85" />
-          <stop offset="100%" stopColor="#2D5A45" />
-        </linearGradient>
-      </defs>
-
-      <rect width="240" height="260" fill="url(#sky)" rx="20" />
-
-      {/* sun */}
-      <circle cx="200" cy="40" r="16" fill="#F4C542" opacity="0.85" />
-      <circle cx="200" cy="40" r="22" fill="#F4C542" opacity="0.25" />
-
-      {/* drifting clouds */}
-      <g className="animate-drift-slow">
-        <ellipse cx="50" cy="40" rx="22" ry="8" fill="#fff" opacity="0.9" />
-        <ellipse cx="62" cy="36" rx="14" ry="6" fill="#fff" opacity="0.9" />
-      </g>
-      <g className="animate-drift">
-        <ellipse cx="150" cy="62" rx="20" ry="7" fill="#fff" opacity="0.8" />
-      </g>
-
-      {/* distant hills */}
-      <ellipse cx="40" cy="230" rx="80" ry="22" fill="#cfe8d7" opacity="0.7" />
-      <ellipse cx="210" cy="232" rx="70" ry="20" fill="#cfe8d7" opacity="0.7" />
-
-      {/* soil */}
-      <ellipse cx="120" cy="234" rx="100" ry="14" fill="#8B5E3C" />
-      <ellipse cx="120" cy="231" rx="100" ry="9" fill="#A47148" />
-
-      {/* grass tufts */}
-      <g stroke="#5BAF85" strokeWidth="3" strokeLinecap="round" className="animate-sway" style={{ transformOrigin: "120px 230px" }}>
-        <line x1="40" y1="230" x2="40" y2="218" />
-        <line x1="48" y1="230" x2="46" y2="216" />
-        <line x1="56" y1="230" x2="58" y2="220" />
-        <line x1="190" y1="230" x2="190" y2="218" />
-        <line x1="198" y1="230" x2="200" y2="216" />
-        <line x1="206" y1="230" x2="204" y2="220" />
-      </g>
-
-      {/* swaying plant group */}
-      <g className="animate-sway" style={{ transformOrigin: "120px 230px" }}>
-        {/* stem grows smoothly via CSS transition on y2 */}
-        <line
-          x1="120"
-          y1="230"
-          x2="120"
-          y2={stemTopY}
-          stroke="url(#stemGrad)"
-          strokeWidth={5}
-          strokeLinecap="round"
-          style={{ transition: "all 600ms ease-out" }}
-        />
-
-        {/* leaves along stem — one pair per completed flower + growing pair */}
-        {Array.from({ length: blooms.length + 1 }).map((_, i) => {
-          const segTop = BASE - (i + 1) * SEGMENT;
-          const segBot = BASE - i * SEGMENT;
-          const leafY = (segTop + segBot) / 2 + 8;
-          const visible = i < blooms.length || growth > 0.3;
-          if (!visible) return null;
-          return (
-            <g key={`leaf-${i}`} className="animate-leaf" style={{ animationDelay: `${i * 120}ms` }}>
-              <ellipse
-                cx={108}
-                cy={leafY}
-                rx="13"
-                ry="6.5"
-                fill="#6dbf95"
-                transform={`rotate(-28 108 ${leafY})`}
-              />
-              <ellipse
-                cx={132}
-                cy={leafY - 6}
-                rx="13"
-                ry="6.5"
-                fill="#5BAF85"
-                transform={`rotate(28 132 ${leafY - 6})`}
-              />
-            </g>
-          );
-        })}
-
-        {/* completed blooms */}
-        {blooms.map((colorIdx, i) => {
-          const cy = bloomY(i);
-          const color = FLOWER_COLORS[colorIdx % FLOWER_COLORS.length];
-          return (
-            <g key={`bloom-${i}`} className="animate-bloom" style={{ transformOrigin: `120px ${cy}px` }}>
-              {[0, 72, 144, 216, 288].map((deg) => (
-                <ellipse
-                  key={deg}
-                  cx="120"
-                  cy={cy}
-                  rx="9"
-                  ry="14"
-                  fill={color}
-                  transform={`rotate(${deg} 120 ${cy}) translate(0 -8)`}
-                />
-              ))}
-              <circle cx="120" cy={cy} r="6" fill="#EF9F27" />
-            </g>
-          );
-        })}
-
-        {/* growing bud / opening flower at top */}
-        {growth > 0.55 && growth < 1 && (
-          <ellipse
-            cx="120"
-            cy={stemTopY + 2}
-            rx={6 + growth * 3}
-            ry={9 + growth * 4}
-            fill="#F4A89B"
-            style={{ transition: "all 600ms ease-out" }}
-          />
-        )}
-      </g>
-
-      {/* twinkles around newest bloom */}
-      {blooms.length > 0 && (
-        <g>
-          {[[90, 60], [150, 70], [100, 40], [148, 50]].map(([x, y], i) => (
-            <circle
-              key={i}
-              cx={x}
-              cy={bloomY(blooms.length - 1) + (y - 60)}
-              r="2.5"
-              fill="#EF9F27"
-              className="animate-twinkle"
-              style={{ animationDelay: `${i * 0.4}s` }}
-            />
-          ))}
-        </g>
-      )}
-    </svg>
-  );
-};
-
-const TOTAL_GROWTH_MS = 12000; // demo speed — one flower in ~12s
+const TOTAL_SECONDS = 15 * 60; // 15 minute session
+const DEMO_TICK_MS = 1000;     // 1s = 1s
 
 const Timer = ({ onDone, onBack }: any) => {
-  const [growth, setGrowth] = useState(0.35);
-  const [blooms, setBlooms] = useState<number[]>([]);
+  // Start partway in so the ring shows meaningful progress in the prototype
+  const [secondsLeft, setSecondsLeft] = useState(9 * 60 + 12); // 9:12 remaining
+  const [totalSeconds, setTotalSeconds] = useState(TOTAL_SECONDS);
   const [paused, setPaused] = useState(false);
-  const [showClock, setShowClock] = useState(false);
-  const [justBloomed, setJustBloomed] = useState(false);
+  const [msgIdx, setMsgIdx] = useState(0);
 
-  // smooth continuous growth
+  // Countdown
   useEffect(() => {
-    if (paused || justBloomed) return;
-    const tick = 100;
+    if (paused) return;
     const id = setInterval(() => {
-      setGrowth((g) => {
-        const next = g + tick / TOTAL_GROWTH_MS;
-        if (next >= 1) {
-          setBlooms((b) => [...b, b.length]);
-          setJustBloomed(true);
-          return 0;
-        }
-        return next;
+      setSecondsLeft((s) => {
+        if (s <= 1) { onDone?.(); return 0; }
+        return s - 1;
       });
-    }, tick);
+    }, DEMO_TICK_MS);
     return () => clearInterval(id);
-  }, [paused, justBloomed]);
+  }, [paused, onDone]);
 
-  const elapsedMin = blooms.length * 5 + Math.round(growth * 5);
-  const totalFlowers = blooms.length;
+  // Rotate encouragement every ~30s
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setMsgIdx((i) => (i + 1) % ENCOURAGEMENTS.length), 30000);
+    return () => clearInterval(id);
+  }, [paused]);
 
-  const keepGrowing = () => {
-    setJustBloomed(false);
-    setGrowth(0);
+  const elapsed = totalSeconds - secondsLeft;
+  const progress = Math.min(1, Math.max(0, elapsed / totalSeconds));
+
+  // Contextual Olee
+  const phase: "curious" | "focused" | "excited" =
+    progress < 0.33 ? "curious" : progress < 0.75 ? "focused" : "excited";
+  const oleePose = phase === "curious" ? "thinking" : phase === "focused" ? "reading" : "celebrate";
+  const oleeExpr = phase === "curious" ? "happy" : phase === "focused" ? "calm" : "excited";
+
+  // Ring geometry
+  const R = 132;
+  const C = 2 * Math.PI * R;
+  const dash = C * progress;
+
+  const mm = String(Math.floor(secondsLeft / 60)).padStart(1, "0");
+  const ss = String(secondsLeft % 60).padStart(2, "0");
+
+  const addFive = () => {
+    setTotalSeconds((t) => t + 5 * 60);
+    setSecondsLeft((s) => s + 5 * 60);
   };
 
-  const message = justBloomed
-    ? `A new flower bloomed! 🌸 ${totalFlowers === 1 ? "Your first one!" : `That's ${totalFlowers} flowers!`}`
-    : growth < 0.3
-    ? "A tiny sprout is reaching for the sun..."
-    : growth < 0.6
-    ? "Leaves are unfurling — keep reading!"
-    : growth < 0.9
-    ? "A bud is forming... almost there!"
-    : "Watch closely — it's about to bloom!";
-
   return (
-    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-5 bg-gradient-to-b from-primary-light/50 to-background">
+    <div className="w-full h-full flex flex-col items-center px-6 pt-3 pb-6 bg-gradient-to-b from-primary-light/60 via-background to-background">
+      {/* minimal header */}
       <div className="w-full flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
         </button>
         <div className="text-center">
-          <p className="text-[10px] font-extrabold tracking-wider text-primary">READING WITH OLEE</p>
+          <p className="text-[10px] font-extrabold tracking-wider text-primary/80">READING WITH OLEE</p>
           <p className="text-sm font-extrabold text-foreground">The Tiger Who Came to Tea</p>
         </div>
-        <button
-          onClick={() => { setShowClock(true); setTimeout(() => setShowClock(false), 2000); }}
-          aria-label="Time check"
-          className="w-10 h-10 rounded-full bg-card/60 border border-border flex items-center justify-center text-muted-foreground/60 relative"
-        >
-          <Clock size={14} />
-          {showClock && (
-            <span className="absolute -bottom-7 right-0 text-[10px] font-extrabold bg-foreground text-background px-2 py-1 rounded-md whitespace-nowrap">
-              {elapsedMin} min
-            </span>
-          )}
-        </button>
+        <div className="w-10 h-10" />
       </div>
 
-      {/* Garden scene — taller to fit multiple flowers */}
-      <div className="mt-4 w-full bg-card rounded-3xl border-2 border-primary/20 overflow-hidden shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
-        <div className="relative h-[280px] flex items-end">
-          <div className="absolute inset-0">
-            <GardenScene growth={paused ? growth : growth} blooms={blooms} />
-          </div>
-          <div className="absolute bottom-2 right-3 animate-float">
-            <Olee pose={justBloomed ? "celebrate" : paused ? "calm" : "thinking"} expression={justBloomed ? "excited" : "happy"} size={64} />
-          </div>
-          {/* flower counter */}
-          {totalFlowers > 0 && (
-            <div className="absolute top-3 left-3 bg-card/90 backdrop-blur px-2.5 py-1 rounded-full border border-primary/20 flex items-center gap-1 shadow-sm">
-              <span className="text-sm">🌸</span>
-              <span className="text-xs font-extrabold text-foreground">{totalFlowers}</span>
+      {/* Ring + Olee */}
+      <div className="relative mt-6 w-[300px] h-[300px] flex items-center justify-center">
+        <svg viewBox="0 0 300 300" className="absolute inset-0 w-full h-full -rotate-90">
+          {/* track */}
+          <circle cx="150" cy="150" r={R} fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="10" />
+          {/* progress */}
+          <circle
+            cx="150"
+            cy="150"
+            r={R}
+            fill="none"
+            stroke="hsl(var(--primary))"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${C - dash}`}
+            style={{ transition: "stroke-dasharray 800ms linear" }}
+          />
+        </svg>
+
+        {/* streak pill on top of the ring */}
+        <div className="absolute -top-1 left-1/2 -translate-x-1/2 bg-card border border-primary/25 rounded-full px-3 py-1 flex items-center gap-1 shadow-sm">
+          <Flame size={12} className="text-accent" />
+          <span className="text-[11px] font-extrabold text-foreground">Day 7</span>
+        </div>
+
+        {/* Olee inside the ring — breathing + page-turn loop, contextual */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
+          <div className="animate-breathe">
+            <div className={cn(oleePose === "reading" && "animate-page-turn")}>
+              <Olee pose={paused ? "calm" : oleePose} expression={paused ? "calm" : oleeExpr} size={140} />
             </div>
-          )}
+          </div>
+          {/* time remaining */}
+          <div className="-mt-1 text-center">
+            <p className="text-[28px] leading-none font-extrabold text-foreground tracking-tight tabular-nums">
+              {mm}:{ss}
+            </p>
+            <p className="text-[10px] font-extrabold tracking-wider text-muted-foreground mt-1">
+              {paused ? "PAUSED" : "MIN LEFT"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <p className="mt-4 text-sm font-display text-foreground text-center px-4 min-h-[40px]">
-        {paused ? "Garden paused... tap play to keep growing!" : message}
+      {/* rotating encouragement */}
+      <p
+        key={msgIdx}
+        className="mt-6 text-sm font-display text-muted-foreground text-center px-4 animate-fade-in min-h-[40px]"
+      >
+        {paused ? "Take your time — Olee is waiting cozily." : ENCOURAGEMENTS[msgIdx]}
       </p>
 
-      {/* Smooth growth progress bar (replaces dots) */}
-      {!justBloomed && (
-        <div className="mt-2 w-40 h-1.5 rounded-full bg-primary/15 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-primary-soft to-primary rounded-full"
-            style={{ width: `${growth * 100}%`, transition: "width 200ms linear" }}
-          />
-        </div>
-      )}
-
-      {/* Action area */}
-      <div className="mt-auto pt-4 w-full flex flex-col items-center gap-3">
-        {justBloomed ? (
-          <div className="w-full grid grid-cols-2 gap-2 animate-fade-in">
-            <button
-              onClick={keepGrowing}
-              className="bg-card border-2 border-primary/30 rounded-2xl py-3.5 text-sm font-extrabold text-foreground active:scale-95 flex items-center justify-center gap-1.5"
-            >
-              <Plus size={16} /> 5 more min
-            </button>
-            <button
-              onClick={onDone}
-              className="bg-primary text-primary-foreground rounded-2xl py-3.5 text-sm font-extrabold active:scale-95 flex items-center justify-center gap-1.5"
-            >
-              I'm done ⭐
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setPaused((p) => !p)}
-            className="w-16 h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95 pulse-ring"
-            aria-label={paused ? "Resume" : "Pause"}
-          >
-            {paused ? <Play size={26} fill="currentColor" className="ml-0.5" /> : <Pause size={26} fill="currentColor" />}
-          </button>
-        )}
+      {/* Pause + 5 min only */}
+      <div className="mt-auto pt-2 flex items-center gap-4">
+        <button
+          onClick={addFive}
+          className="h-12 px-5 rounded-full bg-card border-2 border-primary/25 text-foreground text-sm font-extrabold flex items-center gap-1.5 active:scale-95 shadow-sm"
+        >
+          <Plus size={16} /> 5 min
+        </button>
+        <button
+          onClick={() => setPaused((p) => !p)}
+          className="w-16 h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
+          aria-label={paused ? "Resume" : "Pause"}
+        >
+          {paused ? <Play size={26} fill="currentColor" className="ml-0.5" /> : <Pause size={26} fill="currentColor" />}
+        </button>
+        <div className="w-[88px]" />
       </div>
     </div>
   );
 };
+
 
 
 const EMOJI_REACTIONS = [
