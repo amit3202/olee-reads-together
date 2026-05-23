@@ -2164,4 +2164,91 @@ const OleeLibrary = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+/* ---------- Evolution celebration (23) ---------- */
+const EvolutionScreen = ({ onContinue }: { onContinue: () => void }) => (
+  <div className="w-full h-full flex flex-col items-center justify-center px-6 py-6 bg-[radial-gradient(circle_at_center,_#fff_0%,_#DEF1E5_100%)] relative overflow-hidden">
+    {/* sparkles */}
+    {[[40, 80], [280, 100], [60, 300], [290, 320], [100, 500], [260, 540], [180, 60]].map(([x, y], i) => (
+      <div key={i} className="absolute text-accent animate-pop" style={{ left: x, top: y, animationDelay: `${i * 120}ms` }}>
+        <Sparkles size={20} fill="currentColor" />
+      </div>
+    ))}
+
+    <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE EVOLVED!</p>
+
+    <div className="mt-3 animate-float">
+      <Olee pose="celebrate" expression="proud" size={170} />
+    </div>
+
+    <h1 className="text-3xl font-display mt-4 text-foreground text-center">Olee evolved!</h1>
+    <div className="mt-2 flex items-center gap-2 bg-card border-2 border-primary/30 rounded-full px-4 py-2 shadow-sm">
+      <span className="text-sm font-extrabold text-foreground/70">Sapling Olee</span>
+      <ArrowRight size={16} className="text-primary" />
+      <span className="text-sm font-extrabold text-primary">Bloom Olee</span>
+    </div>
+
+    <p className="mt-4 text-sm text-center text-foreground/80 max-w-[260px] font-bold leading-relaxed">
+      Aarav helped Olee grow by reading every day!
+    </p>
+
+    <div className="absolute bottom-8 left-6 right-6">
+      <PrimaryBtn onClick={onContinue}>
+        <Sparkles size={18} /> Amazing!
+      </PrimaryBtn>
+    </div>
+  </div>
+);
+
+/* ---------- Weekly story (24) ---------- */
+const WeeklyStoryScreen = ({ onContinue }: { onContinue: () => void }) => (
+  <div className="w-full h-full flex flex-col px-5 pt-3 pb-5 bg-gradient-to-b from-primary-light/40 to-background overflow-y-auto scrollbar-hide">
+    <div className="text-center">
+      <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE'S WEEKLY STORY</p>
+      <p className="text-xs font-bold text-muted-foreground">May 12 – May 18</p>
+    </div>
+
+    <div className="mt-4 bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
+      <div className="flex justify-center -mt-12 mb-2">
+        <div className="bg-card rounded-full p-2 border-2 border-primary/30">
+          <Olee pose="reading" size={70} />
+        </div>
+      </div>
+      <p className="text-sm leading-relaxed text-foreground font-semibold text-center">
+        This week, <span className="font-extrabold text-primary">Aarav</span> and Olee shared
+        <span className="font-extrabold"> 5 reading adventures</span> together! They explored
+        <span className="italic"> The Tiger Who Came to Tea</span> and
+        <span className="italic"> Charlotte's Web</span>, growing
+        <span className="font-extrabold"> 7 beautiful flowers</span> in their garden.
+        Aarav said the stories were <span className="font-extrabold">"mind-blowing"</span> most of the time —
+        Olee agrees! Olee grew <span className="font-extrabold">8 stars</span> closer to becoming a Bloom.
+      </p>
+
+      <div className="mt-4 flex justify-center gap-1.5 text-2xl">
+        <span>🌸</span><span>🌸</span><span>🌱</span><span>🌸</span><span>🌸</span>
+        <span className="opacity-30">·</span><span>🌸</span>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div className="bg-primary-light rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">5</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">DAYS READ</p>
+        </div>
+        <div className="bg-accent-soft rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">7</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">FLOWERS</p>
+        </div>
+        <div className="bg-primary-light rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">15</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">STARS</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-4 space-y-2">
+      <OutlineBtn onClick={() => {}}>Share Olee's story</OutlineBtn>
+      <PrimaryBtn onClick={onContinue}>Continue to Today <ArrowRight size={18} /></PrimaryBtn>
+    </div>
+  </div>
+);
+
 export default Index;
