@@ -427,30 +427,91 @@ const Setup2 = ({ onNext, onBack }: any) => {
   );
 };
 
+/* ---------- Olee growth stages ---------- */
+const OLEE_STAGES = [
+  { name: "Seedling Olee", min: 0, max: 10 },
+  { name: "Sapling Olee", min: 11, max: 25 },
+  { name: "Bloom Olee", min: 26, max: 50 },
+  { name: "Blossom Olee", min: 51, max: 100 },
+  { name: "Tree Olee", min: 101, max: 200 },
+  { name: "Mighty Oak Olee", min: 201, max: 999 },
+];
+const getStage = (stars: number) => {
+  const idx = OLEE_STAGES.findIndex((s) => stars >= s.min && stars <= s.max);
+  const i = idx === -1 ? OLEE_STAGES.length - 1 : idx;
+  const cur = OLEE_STAGES[i];
+  const next = OLEE_STAGES[i + 1];
+  const progress = next ? (stars - cur.min) / (next.min - cur.min) : 1;
+  const toNext = next ? next.min - stars : 0;
+  return { cur, next, progress: Math.min(1, Math.max(0, progress)), toNext, index: i };
+};
+
+/* ---------- Today's Adventures ---------- */
+const ADVENTURES = [
+  { icon: "🔍", t: "Mystery Hunt", s: "Find a word you've never seen before!", bg: "#DDEAF7", q: "Did you find a mystery word? 🔍" },
+  { icon: "🎭", t: "Character Day", s: "Pick your favorite character and imagine being them", bg: "#FCE3DD", q: "Who was your favorite character? 🎭" },
+  { icon: "😮", t: "Surprise Seeker", s: "Look for something unexpected in the story", bg: "#DDEAF7", q: "What surprised you? 😮" },
+  { icon: "🌈", t: "Imagination Spark", s: "What would YOU do if you were in this story?", bg: "#DEF1E5", q: "What would you have done? 🌈" },
+  { icon: "💬", t: "Quote Catcher", s: "Find a sentence that sounds really cool", bg: "#FCEFD2", q: "Got a cool line for Olee? 💬" },
+  { icon: "🗺️", t: "World Explorer", s: "Where does today's story happen? Picture it!", bg: "#DDEAF7", q: "Where did the story take you? 🗺️" },
+  { icon: "🧩", t: "Prediction Time", s: "Guess what might happen next!", bg: "#EEEDFE", q: "Was your guess right? 🧩" },
+  { icon: "👀", t: "Detail Detective", s: "Notice something small that others might miss", bg: "#DDEAF7", q: "What did you spot? 👀" },
+  { icon: "😊", t: "Feeling Finder", s: "How does the main character feel right now?", bg: "#EEEDFE", q: "How was the character feeling? 😊" },
+  { icon: "🎨", t: "Picture Painter", s: "Imagine the scene in your head as a painting", bg: "#FCE3DD", q: "What did your picture look like? 🎨" },
+];
+const todayAdventure = () => ADVENTURES[new Date().getDate() % ADVENTURES.length];
+
 const Today = ({ onStart, onStories, tab, setTab }: any) => {
   const [duration, setDuration] = useState(15);
   const dec = () => setDuration((d) => Math.max(15, d - 5));
   const inc = () => setDuration((d) => Math.min(60, d + 5));
   const mm = String(duration).padStart(2, "0");
+  const stars = 18; // demo
+  const stage = getStage(stars);
+  const adv = todayAdventure();
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="animate-float">
-            <Olee pose="wave" expression="excited" size={56} />
+      {/* New header: Olee growth + streak */}
+      <div className="px-5 pt-2 pb-3 flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="animate-float shrink-0">
+            <Olee pose="wave" expression="excited" size={64} />
           </div>
-          <div>
-            <p className="text-xs font-bold text-primary">Hi Aarav!</p>
-            <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold tracking-wider text-primary">HI AARAV!</p>
+            <h2 className="text-base font-display leading-tight">{stage.cur.name}</h2>
+            <div className="mt-1.5 h-2 w-full bg-primary-light rounded-full overflow-hidden">
+              <div className="h-full bg-primary transition-all" style={{ width: `${stage.progress * 100}%` }} />
+            </div>
+            {stage.next && (
+              <p className="text-[10px] font-extrabold text-accent mt-1">
+                {stage.toNext} stars to {stage.next.name.replace(" Olee", "")}!
+              </p>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
-          <Flame size={16} className="text-accent" fill="currentColor" />
-          <span className="text-sm font-extrabold text-accent">7 days</span>
+        <div className="flex items-center gap-1.5 bg-accent-soft px-2.5 py-1.5 rounded-full shrink-0">
+          <Flame size={14} className="text-accent" fill="currentColor" />
+          <span className="text-xs font-extrabold text-accent">7</span>
         </div>
       </div>
 
-      <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
+      <div className="px-5 flex-1 overflow-y-auto pb-24 scrollbar-hide">
+        {/* Today's Adventure card */}
+        <div className="rounded-2xl p-3 flex items-center gap-3 mb-3" style={{ background: adv.bg }}>
+          <div className="w-11 h-11 rounded-xl bg-white/70 flex items-center justify-center text-xl shrink-0">
+            {adv.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[9px] font-extrabold tracking-wider text-foreground/60">TODAY'S ADVENTURE</p>
+            <p className="text-sm font-display text-foreground leading-tight">{adv.t}</p>
+            <p className="text-[11px] font-bold text-foreground/70 leading-snug">{adv.s}</p>
+          </div>
+          <div className="shrink-0 -mr-1">
+            <Olee pose="thinking" size={44} />
+          </div>
+        </div>
+
         <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
           <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
           <div className="mt-2">
@@ -460,53 +521,37 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
             />
           </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-6xl font-display text-foreground tracking-tight">{mm}:00</p>
-            <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
+          <div className="mt-5 text-center">
+            <p className="text-5xl font-display text-foreground tracking-tight">{mm}:00</p>
+            <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to grow with you!</p>
           </div>
 
-          {/* duration adjuster */}
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <button
-              onClick={dec}
-              disabled={duration <= 15}
-              aria-label="Decrease minutes"
-              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
-            >
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <button onClick={dec} disabled={duration <= 15} aria-label="Decrease minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition">
               <Minus size={18} />
             </button>
             <div className="flex items-center gap-1.5 bg-muted/60 px-3 py-1.5 rounded-full">
               <Clock size={14} className="text-muted-foreground" />
               <span className="text-xs font-extrabold text-foreground tracking-wide">{duration} MIN</span>
             </div>
-            <button
-              onClick={inc}
-              disabled={duration >= 60}
-              aria-label="Increase minutes"
-              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
-            >
+            <button onClick={inc} disabled={duration >= 60} aria-label="Increase minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition">
               <Plus size={18} />
             </button>
           </div>
-          <p className="mt-1.5 text-[10px] font-bold text-muted-foreground text-center tracking-wider">
-            15 MIN MINIMUM · UP TO 60 MIN FOR LONGER BOOKS
-          </p>
 
           <div className="mt-4 flex flex-col items-center gap-2">
-            <button
-              onClick={onStart}
-              className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
-            >
+            <button onClick={onStart}
+              className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition">
               <Play size={36} fill="currentColor" className="ml-1" />
             </button>
-            <p className="text-sm font-extrabold text-primary">Start reading!</p>
+            <p className="text-sm font-extrabold text-primary">Grow today's flower!</p>
           </div>
         </div>
 
-        <button
-          onClick={onStories}
-          className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
-        >
+        <button onClick={onStories}
+          className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition">
           <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
             <BookOpen size={22} className="text-accent" />
           </div>
