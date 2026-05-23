@@ -92,7 +92,9 @@ const Index = () => {
     { id: "notifWeekly", label: "20. Notif weekly" },
     { id: "formErrors", label: "21. Form errors" },
     { id: "oleeGrowth", label: "22. Olee growth" },
-    { id: "oleeLibrary", label: "23. Olee library" },
+    { id: "evolution", label: "23. Evolution" },
+    { id: "weeklyStory", label: "24. Weekly story" },
+    { id: "oleeLibrary", label: "25. Olee library" },
   ];
 
   return (
@@ -160,6 +162,8 @@ const Index = () => {
             {screen === "notifWeekly" && <NotifPreview kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
             {screen === "formErrors" && <FormErrorStyles />}
             {screen === "oleeGrowth" && <OleeGrowth onBack={() => setScreen("progress")} />}
+            {screen === "evolution" && <EvolutionScreen onContinue={() => setScreen("celebrate")} />}
+            {screen === "weeklyStory" && <WeeklyStoryScreen onContinue={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "oleeLibrary" && <OleeLibrary onBack={() => setScreen("oleeGrowth")} />}
           </div>
         </div>
