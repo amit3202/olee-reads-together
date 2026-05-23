@@ -148,7 +148,7 @@ const Index = () => {
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
-            {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} onOlee={() => setScreen("oleeGrowth")} />}
+            {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} onOlee={() => setScreen("oleeGrowth")} onWeekly={() => setScreen("weeklyStory")} />}
             {screen === "progressDetails" && <ProgressDetails onBack={() => setScreen("progress")} />}
             {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
             {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("storyRead")} />}
@@ -894,7 +894,7 @@ const StoryNote = ({ onBack, onSave }: any) => {
   );
 };
 
-const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
+const Progress = ({ tab, setTab, onDetails, onOlee, onWeekly }: any) => {
   const days = [
     { d: "M", done: true }, { d: "T", done: true }, { d: "W", done: true },
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
@@ -941,6 +941,21 @@ const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
             <p className="text-[11px] text-muted-foreground font-semibold">1 more story to bloom</p>
           </div>
           <ChevronRight size={18} className="text-foreground/50" />
+        </button>
+
+        <button
+          onClick={onWeekly}
+          className="mt-3 w-full bg-card border-2 border-accent/30 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center text-2xl">
+            📖
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold tracking-wider text-accent">THIS WEEK'S STORY</p>
+            <p className="font-display text-foreground text-sm leading-tight">Olee's weekly story</p>
+            <p className="text-[11px] text-muted-foreground font-semibold">May 12 – May 18 · 5 days read</p>
+          </div>
+          <ChevronRight size={18} className="text-accent" />
         </button>
 
         <div className="mt-3 bg-card border border-border rounded-2xl p-4">
