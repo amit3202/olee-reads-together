@@ -14,7 +14,8 @@ type Screen =
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
-  | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors";
+  | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors"
+  | "evolution" | "weeklyStory";
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
