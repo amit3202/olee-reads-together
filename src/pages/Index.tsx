@@ -568,31 +568,93 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
   );
 };
 
-const READING_PROMPTS = [
-  { icon: "💭", t: "What might happen next?" },
-  { icon: "👀", t: "Picture the scene in your head." },
-  { icon: "❤️", t: "How is the character feeling?" },
-  { icon: "🔎", t: "Spot a word you don't know." },
-  { icon: "🗣️", t: "Read this page out loud!" },
+/* ---------- Garden Growth Timer (replaces countdown) ---------- */
+const GARDEN_STAGES = [
+  { msg: "Your garden is starting to grow...", pose: "thinking" as const },
+  { msg: "Olee sees a sprout! 🌱", pose: "wave" as const },
+  { msg: "Look at those leaves growing!", pose: "celebrate" as const },
+  { msg: "A bud is forming! Almost blooming...", pose: "thinking" as const },
+  { msg: "Your flower is blooming! 🌸", pose: "celebrate" as const },
 ];
 
-const Timer = ({ onDone, onBack }: any) => {
-  // Progress at ~31% (10:24 / 15:00)
-  const progress = 0.31;
-  const radius = 110;
-  const circumference = 2 * Math.PI * radius;
-  const angle = -Math.PI / 2 + progress * 2 * Math.PI;
-  const cx = 160 + radius * Math.cos(angle);
-  const cy = 160 + radius * Math.sin(angle);
+const GardenScene = ({ stage }: { stage: number }) => {
+  // stage 0..4 — render progressively more growth
+  const stemHeight = [4, 28, 60, 84, 96][stage];
+  const showLeaves = stage >= 1;
+  const moreLeaves = stage >= 2;
+  const showBud = stage >= 3;
+  const bloomed = stage >= 4;
+  return (
+    <svg viewBox="0 0 240 200" className="w-full h-full">
+      <defs>
+        <radialGradient id="sky" cx="0.5" cy="0.3" r="0.9">
+          <stop offset="0%" stopColor="#EAF7F0" />
+          <stop offset="100%" stopColor="#FDFCF9" />
+        </radialGradient>
+      </defs>
+      <rect width="240" height="200" fill="url(#sky)" rx="20" />
+      {/* clouds */}
+      <ellipse cx="50" cy="34" rx="22" ry="8" fill="#fff" opacity="0.9" />
+      <ellipse cx="190" cy="46" rx="26" ry="9" fill="#fff" opacity="0.9" />
+      {/* soil */}
+      <ellipse cx="120" cy="180" rx="92" ry="14" fill="#8B5E3C" />
+      <ellipse cx="120" cy="178" rx="92" ry="10" fill="#A47148" />
+      {/* surrounding grass at later stages */}
+      {moreLeaves && (
+        <g stroke="#5BAF85" strokeWidth="3" strokeLinecap="round">
+          <line x1="55" y1="178" x2="55" y2="168" />
+          <line x1="62" y1="178" x2="60" y2="166" />
+          <line x1="182" y1="178" x2="184" y2="166" />
+          <line x1="190" y1="178" x2="190" y2="170" />
+        </g>
+      )}
+      {/* stem */}
+      <line x1="120" y1="178" x2="120" y2={178 - stemHeight}
+        stroke="#3a8a5a" strokeWidth={stage >= 2 ? 5 : 3.5} strokeLinecap="round" />
+      {/* leaves */}
+      {showLeaves && (
+        <>
+          <ellipse cx={108} cy={178 - stemHeight * 0.45} rx="11" ry="6" fill="#5BAF85" transform={`rotate(-25 108 ${178 - stemHeight * 0.45})`} />
+          <ellipse cx={132} cy={178 - stemHeight * 0.6} rx="11" ry="6" fill="#5BAF85" transform={`rotate(25 132 ${178 - stemHeight * 0.6})`} />
+        </>
+      )}
+      {moreLeaves && (
+        <>
+          <ellipse cx={106} cy={178 - stemHeight * 0.75} rx="13" ry="7" fill="#6dbf95" transform={`rotate(-30 106 ${178 - stemHeight * 0.75})`} />
+          <ellipse cx={134} cy={178 - stemHeight * 0.85} rx="13" ry="7" fill="#6dbf95" transform={`rotate(30 134 ${178 - stemHeight * 0.85})`} />
+        </>
+      )}
+      {/* bud */}
+      {showBud && !bloomed && (
+        <ellipse cx="120" cy={178 - stemHeight - 6} rx="9" ry="13" fill="#F4A89B" />
+      )}
+      {/* bloom */}
+      {bloomed && (
+        <g>
+          {[0, 72, 144, 216, 288].map((deg) => (
+            <ellipse key={deg} cx="120" cy={178 - stemHeight - 14} rx="10" ry="16"
+              fill="#F4A89B" transform={`rotate(${deg} 120 ${178 - stemHeight - 14})`} />
+          ))}
+          <circle cx="120" cy={178 - stemHeight - 14} r="7" fill="#EF9F27" />
+          {/* sparkles */}
+          {[[90, 60], [150, 70], [105, 40], [140, 45]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="2" fill="#EF9F27" opacity="0.8" />
+          ))}
+        </g>
+      )}
+    </svg>
+  );
+};
 
-  const [promptIdx, setPromptIdx] = useState(0);
-  const [pages, setPages] = useState(7);
-  const [tricky, setTricky] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false);
-  const prompt = READING_PROMPTS[promptIdx];
+const Timer = ({ onDone, onBack }: any) => {
+  const [stage, setStage] = useState(2); // demo: mid-growth
+  const [paused, setPaused] = useState(false);
+  const [showClock, setShowClock] = useState(false);
+  const elapsedMin = [1, 4, 7, 10, 14][stage];
+  const data = GARDEN_STAGES[stage];
 
   return (
-    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-4 bg-gradient-to-b from-primary-light/60 to-background overflow-y-auto scrollbar-hide">
+    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-5 bg-gradient-to-b from-primary-light/40 to-background">
       <div className="w-full flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
@@ -600,119 +662,81 @@ const Timer = ({ onDone, onBack }: any) => {
         <div className="text-center">
           <p className="text-[10px] font-extrabold tracking-wider text-primary">READING WITH OLEE</p>
           <p className="text-sm font-extrabold text-foreground">The Tiger Who Came to Tea</p>
-          <p className="text-[10px] font-bold text-muted-foreground">Chapter 2 · p.14</p>
         </div>
         <button
-          onClick={() => setBookmarked((b) => !b)}
-          aria-label="Bookmark moment"
-          className={cn(
-            "w-10 h-10 rounded-full border flex items-center justify-center transition",
-            bookmarked ? "bg-accent text-accent-foreground border-accent" : "bg-card border-border text-muted-foreground"
-          )}
+          onClick={() => { setShowClock(true); setTimeout(() => setShowClock(false), 2000); }}
+          aria-label="Time check"
+          className="w-10 h-10 rounded-full bg-card/60 border border-border flex items-center justify-center text-muted-foreground/60 relative"
         >
-          <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} />
+          <Clock size={14} />
+          {showClock && (
+            <span className="absolute -bottom-7 right-0 text-[10px] font-extrabold bg-foreground text-background px-2 py-1 rounded-md whitespace-nowrap">
+              {elapsedMin} min
+            </span>
+          )}
         </button>
       </div>
 
-      <div className="relative mt-4" style={{ width: 280, height: 280 }}>
-        <svg width="280" height="280" className="-rotate-90" viewBox="0 0 320 320">
-          {/* outer streak ring */}
-          <circle cx="160" cy="160" r={radius + 16} stroke="hsl(var(--accent) / 0.15)" strokeWidth="6" fill="none" />
-          <circle
-            cx="160" cy="160" r={radius + 16}
-            stroke="hsl(var(--accent))" strokeWidth="6" fill="none" strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * (radius + 16)}
-            strokeDashoffset={2 * Math.PI * (radius + 16) * (1 - 7 / 8)}
-          />
-          {/* main timer ring */}
-          <circle cx="160" cy="160" r={radius} stroke="hsl(var(--primary-light))" strokeWidth="18" fill="none" />
-          <circle
-            cx="160" cy="160" r={radius}
-            stroke="hsl(var(--primary))" strokeWidth="18" fill="none"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - progress)}
-            className="transition-all duration-700"
-          />
-        </svg>
-        {/* Olee on the ring (animated) */}
-        <div
-          className="absolute animate-float"
-          style={{ left: (cx - 38) * (280 / 320), top: (cy - 50) * (280 / 320) }}
-        >
-          <Olee pose="reading" size={66} />
-        </div>
-        {/* time inside */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-5xl font-display text-foreground tracking-tight">10:24</p>
-          <p className="text-[10px] font-bold text-muted-foreground mt-0.5">REMAINING</p>
-          <div className="mt-1 flex items-center gap-1 bg-accent-soft px-2 py-0.5 rounded-full">
-            <Flame size={11} className="text-accent" fill="currentColor" />
-            <span className="text-[10px] font-extrabold text-accent">Day 8 of streak</span>
+      {/* Garden scene */}
+      <div className="mt-4 w-full bg-card rounded-3xl border-2 border-primary/20 overflow-hidden shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
+        <div className="relative h-[220px] flex items-end">
+          <div className="absolute inset-0">
+            <GardenScene stage={paused ? Math.max(0, stage) : stage} />
+          </div>
+          <div className="absolute bottom-2 right-3 animate-float">
+            <Olee pose={paused ? "calm" : data.pose} expression="happy" size={72} />
           </div>
         </div>
       </div>
 
-      {/* Rotating reading prompt */}
-      <button
-        onClick={() => setPromptIdx((i) => (i + 1) % READING_PROMPTS.length)}
-        className="mt-3 w-full bg-card border-2 border-primary/20 rounded-2xl px-4 py-2.5 flex items-center gap-3 active:scale-[0.99] transition"
-      >
-        <div className="w-9 h-9 rounded-xl bg-primary-light flex items-center justify-center text-lg">
-          {prompt.icon}
-        </div>
-        <div className="flex-1 text-left min-w-0">
-          <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE WHISPERS</p>
-          <p className="text-sm font-bold text-foreground truncate">{prompt.t}</p>
-        </div>
-        <Lightbulb size={16} className="text-accent shrink-0" />
-      </button>
+      <p className="mt-4 text-sm font-display text-foreground text-center px-4">
+        {paused ? "Garden paused... tap to keep growing!" : data.msg}
+      </p>
 
-      {/* Quick actions */}
-      <div className="mt-3 w-full grid grid-cols-3 gap-2">
-        <button
-          onClick={() => setPages((p) => p + 1)}
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <BookOpen size={18} className="text-primary" />
-          <span className="text-[10px] font-extrabold text-foreground">+1 page</span>
-          <span className="text-[9px] font-bold text-muted-foreground">{pages} read</span>
+      {/* Stage dots — subtle, no numbers */}
+      <div className="mt-3 flex gap-1.5">
+        {GARDEN_STAGES.map((_, i) => (
+          <span key={i} className={cn(
+            "h-1.5 rounded-full transition-all",
+            i <= stage ? "w-5 bg-primary" : "w-2 bg-primary/20"
+          )} />
+        ))}
+      </div>
+
+      {/* Demo stage stepper (prototype only) */}
+      <div className="mt-3 flex items-center gap-2">
+        <button onClick={() => setStage((s) => Math.max(0, s - 1))}
+          className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground">
+          <Minus size={14} />
         </button>
-        <button
-          onClick={() => setTricky((t) => t + 1)}
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <AlertCircle size={18} className="text-coral" />
-          <span className="text-[10px] font-extrabold text-foreground">Tricky word</span>
-          <span className="text-[9px] font-bold text-muted-foreground">{tricky} saved</span>
-        </button>
-        <button
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <Plus size={18} className="text-accent" />
-          <span className="text-[10px] font-extrabold text-foreground">+5 min</span>
-          <span className="text-[9px] font-bold text-muted-foreground">stretch it</span>
+        <span className="text-[10px] font-extrabold text-muted-foreground tracking-wider">DEMO: GROW</span>
+        <button onClick={() => setStage((s) => Math.min(GARDEN_STAGES.length - 1, s + 1))}
+          className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground">
+          <Plus size={14} />
         </button>
       </div>
 
-      {/* Pause / End */}
-      <div className="mt-3 flex items-center gap-4">
+      {/* Pause */}
+      <div className="mt-auto pt-4">
         <button
-          onClick={onDone}
-          className="w-14 h-14 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
-          aria-label="Pause"
+          onClick={() => stage >= GARDEN_STAGES.length - 1 ? onDone() : setPaused((p) => !p)}
+          className="w-16 h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
+          aria-label={paused ? "Resume" : "Pause"}
         >
-          <Pause size={22} fill="currentColor" />
-        </button>
-        <button
-          onClick={onDone}
-          className="px-4 h-11 rounded-full bg-card border border-border text-xs font-extrabold text-muted-foreground active:scale-95"
-        >
-          End early
+          {paused ? <Play size={26} fill="currentColor" className="ml-0.5" /> : <Pause size={26} fill="currentColor" />}
         </button>
       </div>
 
-      <p className="mt-2 text-xs italic text-muted-foreground">Olee is cheering Aarav on...</p>
+      {stage >= GARDEN_STAGES.length - 1 && (
+        <div className="mt-4 w-full grid grid-cols-2 gap-2">
+          <button onClick={() => setStage(0)} className="bg-card border-2 border-primary/30 rounded-2xl py-3 text-xs font-extrabold text-foreground active:scale-95">
+            Grow another 🌱
+          </button>
+          <button onClick={onDone} className="bg-primary text-primary-foreground rounded-2xl py-3 text-xs font-extrabold active:scale-95">
+            Celebrate! ⭐
+          </button>
+        </div>
+      )}
     </div>
   );
 };
