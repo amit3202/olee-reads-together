@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
+import TodayV2 from "@/components/TodayV2";
 import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
