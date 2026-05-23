@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
+import TodayV2 from "@/components/TodayV2";
 import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
@@ -10,12 +11,13 @@ import {
 import { cn } from "@/lib/utils";
 
 type Screen =
-  | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today"
+  | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today" | "todayV2"
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
   | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors"
   | "evolution" | "weeklyStory";
+
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
@@ -74,6 +76,7 @@ const Index = () => {
     { id: "setup2", label: "4. Child" },
     { id: "setupDone", label: "5. All set" },
     { id: "today", label: "6. Today" },
+    { id: "todayV2", label: "6b. Today V2" },
     { id: "timer", label: "7. Timer" },
     { id: "celebrate", label: "8. Celebrate" },
     { id: "storyNote", label: "8b. Story note" },
@@ -145,6 +148,7 @@ const Index = () => {
             {screen === "setup2" && <Setup2 onNext={() => setScreen("setupDone")} onBack={() => setScreen("setup1")} />}
             {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
+            {screen === "todayV2" && <TodayV2 onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
