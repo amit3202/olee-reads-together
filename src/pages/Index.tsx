@@ -14,7 +14,8 @@ type Screen =
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
-  | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors";
+  | "notifDaily" | "notifMissed" | "notifWeekly" | "formErrors"
+  | "evolution" | "weeklyStory";
 
 export type Story = {
   t: string; time: number; moral: string; age: string;
@@ -91,7 +92,9 @@ const Index = () => {
     { id: "notifWeekly", label: "20. Notif weekly" },
     { id: "formErrors", label: "21. Form errors" },
     { id: "oleeGrowth", label: "22. Olee growth" },
-    { id: "oleeLibrary", label: "23. Olee library" },
+    { id: "evolution", label: "23. Evolution" },
+    { id: "weeklyStory", label: "24. Weekly story" },
+    { id: "oleeLibrary", label: "25. Olee library" },
   ];
 
   return (
@@ -145,7 +148,7 @@ const Index = () => {
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
-            {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} onOlee={() => setScreen("oleeGrowth")} />}
+            {screen === "progress" && <Progress tab={tab} setTab={goTab} onDetails={() => setScreen("progressDetails")} onOlee={() => setScreen("oleeGrowth")} onWeekly={() => setScreen("weeklyStory")} />}
             {screen === "progressDetails" && <ProgressDetails onBack={() => setScreen("progress")} />}
             {screen === "stories" && <Stories onBack={() => setScreen("today")} onOpen={(s) => { setActiveStory(s); setScreen("story"); }} />}
             {screen === "story" && <StoryDetail story={activeStory} onBack={() => setScreen("stories")} onStart={() => setScreen("storyRead")} />}
@@ -159,6 +162,8 @@ const Index = () => {
             {screen === "notifWeekly" && <NotifPreview kind="weekly" onOpen={() => { setTab("progress"); setScreen("progress"); }} />}
             {screen === "formErrors" && <FormErrorStyles />}
             {screen === "oleeGrowth" && <OleeGrowth onBack={() => setScreen("progress")} />}
+            {screen === "evolution" && <EvolutionScreen onContinue={() => setScreen("celebrate")} />}
+            {screen === "weeklyStory" && <WeeklyStoryScreen onContinue={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "oleeLibrary" && <OleeLibrary onBack={() => setScreen("oleeGrowth")} />}
           </div>
         </div>
@@ -422,30 +427,91 @@ const Setup2 = ({ onNext, onBack }: any) => {
   );
 };
 
+/* ---------- Olee growth stages ---------- */
+const OLEE_GROWTH = [
+  { name: "Seedling Olee", min: 0, max: 10 },
+  { name: "Sapling Olee", min: 11, max: 25 },
+  { name: "Bloom Olee", min: 26, max: 50 },
+  { name: "Blossom Olee", min: 51, max: 100 },
+  { name: "Tree Olee", min: 101, max: 200 },
+  { name: "Mighty Oak Olee", min: 201, max: 999 },
+];
+const getStage = (stars: number) => {
+  const idx = OLEE_GROWTH.findIndex((s) => stars >= s.min && stars <= s.max);
+  const i = idx === -1 ? OLEE_GROWTH.length - 1 : idx;
+  const cur = OLEE_GROWTH[i];
+  const next = OLEE_GROWTH[i + 1];
+  const progress = next ? (stars - cur.min) / (next.min - cur.min) : 1;
+  const toNext = next ? next.min - stars : 0;
+  return { cur, next, progress: Math.min(1, Math.max(0, progress)), toNext, index: i };
+};
+
+/* ---------- Today's Adventures ---------- */
+const ADVENTURES = [
+  { icon: "🔍", t: "Mystery Hunt", s: "Find a word you've never seen before!", bg: "#DDEAF7", q: "Did you find a mystery word? 🔍" },
+  { icon: "🎭", t: "Character Day", s: "Pick your favorite character and imagine being them", bg: "#FCE3DD", q: "Who was your favorite character? 🎭" },
+  { icon: "😮", t: "Surprise Seeker", s: "Look for something unexpected in the story", bg: "#DDEAF7", q: "What surprised you? 😮" },
+  { icon: "🌈", t: "Imagination Spark", s: "What would YOU do if you were in this story?", bg: "#DEF1E5", q: "What would you have done? 🌈" },
+  { icon: "💬", t: "Quote Catcher", s: "Find a sentence that sounds really cool", bg: "#FCEFD2", q: "Got a cool line for Olee? 💬" },
+  { icon: "🗺️", t: "World Explorer", s: "Where does today's story happen? Picture it!", bg: "#DDEAF7", q: "Where did the story take you? 🗺️" },
+  { icon: "🧩", t: "Prediction Time", s: "Guess what might happen next!", bg: "#EEEDFE", q: "Was your guess right? 🧩" },
+  { icon: "👀", t: "Detail Detective", s: "Notice something small that others might miss", bg: "#DDEAF7", q: "What did you spot? 👀" },
+  { icon: "😊", t: "Feeling Finder", s: "How does the main character feel right now?", bg: "#EEEDFE", q: "How was the character feeling? 😊" },
+  { icon: "🎨", t: "Picture Painter", s: "Imagine the scene in your head as a painting", bg: "#FCE3DD", q: "What did your picture look like? 🎨" },
+];
+const todayAdventure = () => ADVENTURES[new Date().getDate() % ADVENTURES.length];
+
 const Today = ({ onStart, onStories, tab, setTab }: any) => {
   const [duration, setDuration] = useState(15);
   const dec = () => setDuration((d) => Math.max(15, d - 5));
   const inc = () => setDuration((d) => Math.min(60, d + 5));
   const mm = String(duration).padStart(2, "0");
+  const stars = 18; // demo
+  const stage = getStage(stars);
+  const adv = todayAdventure();
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="px-6 pt-2 pb-2 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="animate-float">
-            <Olee pose="wave" expression="excited" size={56} />
+      {/* New header: Olee growth + streak */}
+      <div className="px-5 pt-2 pb-3 flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="animate-float shrink-0">
+            <Olee pose="wave" expression="excited" size={64} />
           </div>
-          <div>
-            <p className="text-xs font-bold text-primary">Hi Aarav!</p>
-            <h2 className="text-xl font-display leading-tight">Let's read today!</h2>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold tracking-wider text-primary">HI AARAV!</p>
+            <h2 className="text-base font-display leading-tight">{stage.cur.name}</h2>
+            <div className="mt-1.5 h-2 w-full bg-primary-light rounded-full overflow-hidden">
+              <div className="h-full bg-primary transition-all" style={{ width: `${stage.progress * 100}%` }} />
+            </div>
+            {stage.next && (
+              <p className="text-[10px] font-extrabold text-accent mt-1">
+                {stage.toNext} stars to {stage.next.name.replace(" Olee", "")}!
+              </p>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-accent-soft px-3 py-1.5 rounded-full">
-          <Flame size={16} className="text-accent" fill="currentColor" />
-          <span className="text-sm font-extrabold text-accent">7 days</span>
+        <div className="flex items-center gap-1.5 bg-accent-soft px-2.5 py-1.5 rounded-full shrink-0">
+          <Flame size={14} className="text-accent" fill="currentColor" />
+          <span className="text-xs font-extrabold text-accent">7</span>
         </div>
       </div>
 
-      <div className="px-5 mt-2 flex-1 overflow-y-auto pb-24 scrollbar-hide">
+      <div className="px-5 flex-1 overflow-y-auto pb-24 scrollbar-hide">
+        {/* Today's Adventure card */}
+        <div className="rounded-2xl p-3 flex items-center gap-3 mb-3" style={{ background: adv.bg }}>
+          <div className="w-11 h-11 rounded-xl bg-white/70 flex items-center justify-center text-xl shrink-0">
+            {adv.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[9px] font-extrabold tracking-wider text-foreground/60">TODAY'S ADVENTURE</p>
+            <p className="text-sm font-display text-foreground leading-tight">{adv.t}</p>
+            <p className="text-[11px] font-bold text-foreground/70 leading-snug">{adv.s}</p>
+          </div>
+          <div className="shrink-0 -mr-1">
+            <Olee pose="thinking" size={44} />
+          </div>
+        </div>
+
         <div className="bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
           <p className="text-[11px] font-extrabold tracking-wider text-primary">WHAT ARE WE READING TODAY?</p>
           <div className="mt-2">
@@ -455,53 +521,37 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
             />
           </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-6xl font-display text-foreground tracking-tight">{mm}:00</p>
-            <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to read with you!</p>
+          <div className="mt-5 text-center">
+            <p className="text-5xl font-display text-foreground tracking-tight">{mm}:00</p>
+            <p className="text-xs font-bold text-muted-foreground mt-1">Olee is ready to grow with you!</p>
           </div>
 
-          {/* duration adjuster */}
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <button
-              onClick={dec}
-              disabled={duration <= 15}
-              aria-label="Decrease minutes"
-              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
-            >
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <button onClick={dec} disabled={duration <= 15} aria-label="Decrease minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition">
               <Minus size={18} />
             </button>
             <div className="flex items-center gap-1.5 bg-muted/60 px-3 py-1.5 rounded-full">
               <Clock size={14} className="text-muted-foreground" />
               <span className="text-xs font-extrabold text-foreground tracking-wide">{duration} MIN</span>
             </div>
-            <button
-              onClick={inc}
-              disabled={duration >= 60}
-              aria-label="Increase minutes"
-              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition"
-            >
+            <button onClick={inc} disabled={duration >= 60} aria-label="Increase minutes"
+              className="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold disabled:opacity-40 active:scale-95 transition">
               <Plus size={18} />
             </button>
           </div>
-          <p className="mt-1.5 text-[10px] font-bold text-muted-foreground text-center tracking-wider">
-            15 MIN MINIMUM · UP TO 60 MIN FOR LONGER BOOKS
-          </p>
 
           <div className="mt-4 flex flex-col items-center gap-2">
-            <button
-              onClick={onStart}
-              className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition"
-            >
+            <button onClick={onStart}
+              className="w-24 h-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center pulse-ring shadow-lg active:scale-95 transition">
               <Play size={36} fill="currentColor" className="ml-1" />
             </button>
-            <p className="text-sm font-extrabold text-primary">Start reading!</p>
+            <p className="text-sm font-extrabold text-primary">Grow today's flower!</p>
           </div>
         </div>
 
-        <button
-          onClick={onStories}
-          className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition"
-        >
+        <button onClick={onStories}
+          className="mt-4 w-full bg-card rounded-3xl p-4 flex items-center gap-3 border-2 border-accent/30 active:scale-[0.99] transition">
           <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center">
             <BookOpen size={22} className="text-accent" />
           </div>
@@ -518,31 +568,93 @@ const Today = ({ onStart, onStories, tab, setTab }: any) => {
   );
 };
 
-const READING_PROMPTS = [
-  { icon: "💭", t: "What might happen next?" },
-  { icon: "👀", t: "Picture the scene in your head." },
-  { icon: "❤️", t: "How is the character feeling?" },
-  { icon: "🔎", t: "Spot a word you don't know." },
-  { icon: "🗣️", t: "Read this page out loud!" },
+/* ---------- Garden Growth Timer (replaces countdown) ---------- */
+const GARDEN_STAGES = [
+  { msg: "Your garden is starting to grow...", pose: "thinking" as const },
+  { msg: "Olee sees a sprout! 🌱", pose: "wave" as const },
+  { msg: "Look at those leaves growing!", pose: "celebrate" as const },
+  { msg: "A bud is forming! Almost blooming...", pose: "thinking" as const },
+  { msg: "Your flower is blooming! 🌸", pose: "celebrate" as const },
 ];
 
-const Timer = ({ onDone, onBack }: any) => {
-  // Progress at ~31% (10:24 / 15:00)
-  const progress = 0.31;
-  const radius = 110;
-  const circumference = 2 * Math.PI * radius;
-  const angle = -Math.PI / 2 + progress * 2 * Math.PI;
-  const cx = 160 + radius * Math.cos(angle);
-  const cy = 160 + radius * Math.sin(angle);
+const GardenScene = ({ stage }: { stage: number }) => {
+  // stage 0..4 — render progressively more growth
+  const stemHeight = [4, 28, 60, 84, 96][stage];
+  const showLeaves = stage >= 1;
+  const moreLeaves = stage >= 2;
+  const showBud = stage >= 3;
+  const bloomed = stage >= 4;
+  return (
+    <svg viewBox="0 0 240 200" className="w-full h-full">
+      <defs>
+        <radialGradient id="sky" cx="0.5" cy="0.3" r="0.9">
+          <stop offset="0%" stopColor="#EAF7F0" />
+          <stop offset="100%" stopColor="#FDFCF9" />
+        </radialGradient>
+      </defs>
+      <rect width="240" height="200" fill="url(#sky)" rx="20" />
+      {/* clouds */}
+      <ellipse cx="50" cy="34" rx="22" ry="8" fill="#fff" opacity="0.9" />
+      <ellipse cx="190" cy="46" rx="26" ry="9" fill="#fff" opacity="0.9" />
+      {/* soil */}
+      <ellipse cx="120" cy="180" rx="92" ry="14" fill="#8B5E3C" />
+      <ellipse cx="120" cy="178" rx="92" ry="10" fill="#A47148" />
+      {/* surrounding grass at later stages */}
+      {moreLeaves && (
+        <g stroke="#5BAF85" strokeWidth="3" strokeLinecap="round">
+          <line x1="55" y1="178" x2="55" y2="168" />
+          <line x1="62" y1="178" x2="60" y2="166" />
+          <line x1="182" y1="178" x2="184" y2="166" />
+          <line x1="190" y1="178" x2="190" y2="170" />
+        </g>
+      )}
+      {/* stem */}
+      <line x1="120" y1="178" x2="120" y2={178 - stemHeight}
+        stroke="#3a8a5a" strokeWidth={stage >= 2 ? 5 : 3.5} strokeLinecap="round" />
+      {/* leaves */}
+      {showLeaves && (
+        <>
+          <ellipse cx={108} cy={178 - stemHeight * 0.45} rx="11" ry="6" fill="#5BAF85" transform={`rotate(-25 108 ${178 - stemHeight * 0.45})`} />
+          <ellipse cx={132} cy={178 - stemHeight * 0.6} rx="11" ry="6" fill="#5BAF85" transform={`rotate(25 132 ${178 - stemHeight * 0.6})`} />
+        </>
+      )}
+      {moreLeaves && (
+        <>
+          <ellipse cx={106} cy={178 - stemHeight * 0.75} rx="13" ry="7" fill="#6dbf95" transform={`rotate(-30 106 ${178 - stemHeight * 0.75})`} />
+          <ellipse cx={134} cy={178 - stemHeight * 0.85} rx="13" ry="7" fill="#6dbf95" transform={`rotate(30 134 ${178 - stemHeight * 0.85})`} />
+        </>
+      )}
+      {/* bud */}
+      {showBud && !bloomed && (
+        <ellipse cx="120" cy={178 - stemHeight - 6} rx="9" ry="13" fill="#F4A89B" />
+      )}
+      {/* bloom */}
+      {bloomed && (
+        <g>
+          {[0, 72, 144, 216, 288].map((deg) => (
+            <ellipse key={deg} cx="120" cy={178 - stemHeight - 14} rx="10" ry="16"
+              fill="#F4A89B" transform={`rotate(${deg} 120 ${178 - stemHeight - 14})`} />
+          ))}
+          <circle cx="120" cy={178 - stemHeight - 14} r="7" fill="#EF9F27" />
+          {/* sparkles */}
+          {[[90, 60], [150, 70], [105, 40], [140, 45]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="2" fill="#EF9F27" opacity="0.8" />
+          ))}
+        </g>
+      )}
+    </svg>
+  );
+};
 
-  const [promptIdx, setPromptIdx] = useState(0);
-  const [pages, setPages] = useState(7);
-  const [tricky, setTricky] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false);
-  const prompt = READING_PROMPTS[promptIdx];
+const Timer = ({ onDone, onBack }: any) => {
+  const [stage, setStage] = useState(2); // demo: mid-growth
+  const [paused, setPaused] = useState(false);
+  const [showClock, setShowClock] = useState(false);
+  const elapsedMin = [1, 4, 7, 10, 14][stage];
+  const data = GARDEN_STAGES[stage];
 
   return (
-    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-4 bg-gradient-to-b from-primary-light/60 to-background overflow-y-auto scrollbar-hide">
+    <div className="w-full h-full flex flex-col items-center px-5 pt-2 pb-5 bg-gradient-to-b from-primary-light/40 to-background">
       <div className="w-full flex items-center justify-between">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center">
           <ArrowLeft size={18} />
@@ -550,179 +662,176 @@ const Timer = ({ onDone, onBack }: any) => {
         <div className="text-center">
           <p className="text-[10px] font-extrabold tracking-wider text-primary">READING WITH OLEE</p>
           <p className="text-sm font-extrabold text-foreground">The Tiger Who Came to Tea</p>
-          <p className="text-[10px] font-bold text-muted-foreground">Chapter 2 · p.14</p>
         </div>
         <button
-          onClick={() => setBookmarked((b) => !b)}
-          aria-label="Bookmark moment"
-          className={cn(
-            "w-10 h-10 rounded-full border flex items-center justify-center transition",
-            bookmarked ? "bg-accent text-accent-foreground border-accent" : "bg-card border-border text-muted-foreground"
-          )}
+          onClick={() => { setShowClock(true); setTimeout(() => setShowClock(false), 2000); }}
+          aria-label="Time check"
+          className="w-10 h-10 rounded-full bg-card/60 border border-border flex items-center justify-center text-muted-foreground/60 relative"
         >
-          <Bookmark size={18} fill={bookmarked ? "currentColor" : "none"} />
+          <Clock size={14} />
+          {showClock && (
+            <span className="absolute -bottom-7 right-0 text-[10px] font-extrabold bg-foreground text-background px-2 py-1 rounded-md whitespace-nowrap">
+              {elapsedMin} min
+            </span>
+          )}
         </button>
       </div>
 
-      <div className="relative mt-4" style={{ width: 280, height: 280 }}>
-        <svg width="280" height="280" className="-rotate-90" viewBox="0 0 320 320">
-          {/* outer streak ring */}
-          <circle cx="160" cy="160" r={radius + 16} stroke="hsl(var(--accent) / 0.15)" strokeWidth="6" fill="none" />
-          <circle
-            cx="160" cy="160" r={radius + 16}
-            stroke="hsl(var(--accent))" strokeWidth="6" fill="none" strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * (radius + 16)}
-            strokeDashoffset={2 * Math.PI * (radius + 16) * (1 - 7 / 8)}
-          />
-          {/* main timer ring */}
-          <circle cx="160" cy="160" r={radius} stroke="hsl(var(--primary-light))" strokeWidth="18" fill="none" />
-          <circle
-            cx="160" cy="160" r={radius}
-            stroke="hsl(var(--primary))" strokeWidth="18" fill="none"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * (1 - progress)}
-            className="transition-all duration-700"
-          />
-        </svg>
-        {/* Olee on the ring (animated) */}
-        <div
-          className="absolute animate-float"
-          style={{ left: (cx - 38) * (280 / 320), top: (cy - 50) * (280 / 320) }}
-        >
-          <Olee pose="reading" size={66} />
-        </div>
-        {/* time inside */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-5xl font-display text-foreground tracking-tight">10:24</p>
-          <p className="text-[10px] font-bold text-muted-foreground mt-0.5">REMAINING</p>
-          <div className="mt-1 flex items-center gap-1 bg-accent-soft px-2 py-0.5 rounded-full">
-            <Flame size={11} className="text-accent" fill="currentColor" />
-            <span className="text-[10px] font-extrabold text-accent">Day 8 of streak</span>
+      {/* Garden scene */}
+      <div className="mt-4 w-full bg-card rounded-3xl border-2 border-primary/20 overflow-hidden shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
+        <div className="relative h-[220px] flex items-end">
+          <div className="absolute inset-0">
+            <GardenScene stage={paused ? Math.max(0, stage) : stage} />
+          </div>
+          <div className="absolute bottom-2 right-3 animate-float">
+            <Olee pose={paused ? "calm" : data.pose} expression="happy" size={72} />
           </div>
         </div>
       </div>
 
-      {/* Rotating reading prompt */}
-      <button
-        onClick={() => setPromptIdx((i) => (i + 1) % READING_PROMPTS.length)}
-        className="mt-3 w-full bg-card border-2 border-primary/20 rounded-2xl px-4 py-2.5 flex items-center gap-3 active:scale-[0.99] transition"
-      >
-        <div className="w-9 h-9 rounded-xl bg-primary-light flex items-center justify-center text-lg">
-          {prompt.icon}
-        </div>
-        <div className="flex-1 text-left min-w-0">
-          <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE WHISPERS</p>
-          <p className="text-sm font-bold text-foreground truncate">{prompt.t}</p>
-        </div>
-        <Lightbulb size={16} className="text-accent shrink-0" />
-      </button>
+      <p className="mt-4 text-sm font-display text-foreground text-center px-4">
+        {paused ? "Garden paused... tap to keep growing!" : data.msg}
+      </p>
 
-      {/* Quick actions */}
-      <div className="mt-3 w-full grid grid-cols-3 gap-2">
-        <button
-          onClick={() => setPages((p) => p + 1)}
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <BookOpen size={18} className="text-primary" />
-          <span className="text-[10px] font-extrabold text-foreground">+1 page</span>
-          <span className="text-[9px] font-bold text-muted-foreground">{pages} read</span>
+      {/* Stage dots — subtle, no numbers */}
+      <div className="mt-3 flex gap-1.5">
+        {GARDEN_STAGES.map((_, i) => (
+          <span key={i} className={cn(
+            "h-1.5 rounded-full transition-all",
+            i <= stage ? "w-5 bg-primary" : "w-2 bg-primary/20"
+          )} />
+        ))}
+      </div>
+
+      {/* Demo stage stepper (prototype only) */}
+      <div className="mt-3 flex items-center gap-2">
+        <button onClick={() => setStage((s) => Math.max(0, s - 1))}
+          className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground">
+          <Minus size={14} />
         </button>
-        <button
-          onClick={() => setTricky((t) => t + 1)}
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <AlertCircle size={18} className="text-coral" />
-          <span className="text-[10px] font-extrabold text-foreground">Tricky word</span>
-          <span className="text-[9px] font-bold text-muted-foreground">{tricky} saved</span>
-        </button>
-        <button
-          className="bg-card border border-border rounded-2xl py-2 flex flex-col items-center gap-0.5 active:scale-95 transition"
-        >
-          <Plus size={18} className="text-accent" />
-          <span className="text-[10px] font-extrabold text-foreground">+5 min</span>
-          <span className="text-[9px] font-bold text-muted-foreground">stretch it</span>
+        <span className="text-[10px] font-extrabold text-muted-foreground tracking-wider">DEMO: GROW</span>
+        <button onClick={() => setStage((s) => Math.min(GARDEN_STAGES.length - 1, s + 1))}
+          className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground">
+          <Plus size={14} />
         </button>
       </div>
 
-      {/* Pause / End */}
-      <div className="mt-3 flex items-center gap-4">
+      {/* Pause */}
+      <div className="mt-auto pt-4">
         <button
-          onClick={onDone}
-          className="w-14 h-14 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
-          aria-label="Pause"
+          onClick={() => stage >= GARDEN_STAGES.length - 1 ? onDone() : setPaused((p) => !p)}
+          className="w-16 h-16 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-lg active:scale-95"
+          aria-label={paused ? "Resume" : "Pause"}
         >
-          <Pause size={22} fill="currentColor" />
-        </button>
-        <button
-          onClick={onDone}
-          className="px-4 h-11 rounded-full bg-card border border-border text-xs font-extrabold text-muted-foreground active:scale-95"
-        >
-          End early
+          {paused ? <Play size={26} fill="currentColor" className="ml-0.5" /> : <Pause size={26} fill="currentColor" />}
         </button>
       </div>
 
-      <p className="mt-2 text-xs italic text-muted-foreground">Olee is cheering Aarav on...</p>
+      {stage >= GARDEN_STAGES.length - 1 && (
+        <div className="mt-4 w-full grid grid-cols-2 gap-2">
+          <button onClick={() => setStage(0)} className="bg-card border-2 border-primary/30 rounded-2xl py-3 text-xs font-extrabold text-foreground active:scale-95">
+            Grow another 🌱
+          </button>
+          <button onClick={onDone} className="bg-primary text-primary-foreground rounded-2xl py-3 text-xs font-extrabold active:scale-95">
+            Celebrate! ⭐
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-const Celebrate = ({ onProgress, onDone, onNote }: any) => (
-  <div className="w-full h-full flex flex-col items-center px-6 pt-4 pb-6 overflow-y-auto scrollbar-hide">
-    <Olee pose="celebrate" expression="excited" size={150} />
+const EMOJI_REACTIONS = [
+  { e: "😄", label: "So fun!", bg: "#FCEFD2", expr: "excited" as const, reply: "Haha! Olee loves funny stories!" },
+  { e: "😮", label: "Surprising!", bg: "#DDEAF7", expr: "excited" as const, reply: "Whoa! Olee didn't see that coming!" },
+  { e: "😢", label: "Kind of sad", bg: "#EEEDFE", expr: "calm" as const, reply: "Aww, that's okay. Sad stories teach us a lot." },
+  { e: "🤯", label: "Mind-blowing!", bg: "#FCE3DD", expr: "excited" as const, reply: "WOW! Olee's mind is blown too! 🤯" },
+  { e: "😊", label: "Loved it!", bg: "#DEF1E5", expr: "proud" as const, reply: "Olee loved reading with you today! ❤️" },
+];
 
-    <div className="flex gap-2 mt-2">
-      {[0, 1, 2].map((i) => (
-        <Star
-          key={i}
-          size={36}
-          className="text-accent animate-pop"
-          fill="currentColor"
-          style={{ animationDelay: `${i * 150}ms` }}
-        />
-      ))}
-    </div>
+const Celebrate = ({ onProgress, onDone, onNote }: any) => {
+  const [picked, setPicked] = useState<number | null>(null);
+  const [expand, setExpand] = useState(false);
+  const adv = todayAdventure();
+  const reaction = picked !== null ? EMOJI_REACTIONS[picked] : null;
+  return (
+    <div className="w-full h-full flex flex-col items-center px-5 pt-3 pb-5 overflow-y-auto scrollbar-hide">
+      <Olee pose="celebrate" expression={reaction?.expr ?? "excited"} size={120} />
 
-    <h2 className="text-3xl font-display mt-4 text-center">You did it, Aarav!</h2>
-    <p className="text-sm text-muted-foreground text-center mt-2 leading-relaxed">
-      15 minutes of amazing reading. Olee is so proud! That's <span className="font-extrabold text-foreground">8 days in a row!</span>
-    </p>
-
-    <div className="grid grid-cols-2 gap-3 mt-5 w-full">
-      <div className="bg-primary-light rounded-2xl p-3 text-center">
-        <Flame size={20} className="text-accent mx-auto" fill="currentColor" />
-        <p className="text-2xl font-display mt-1">8</p>
-        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">DAY STREAK</p>
+      <div className="flex gap-2 mt-1">
+        {[0, 1, 2].map((i) => (
+          <Star key={i} size={28} className="text-accent animate-pop" fill="currentColor"
+            style={{ animationDelay: `${i * 150}ms` }} />
+        ))}
       </div>
-      <div className="bg-accent-soft rounded-2xl p-3 text-center">
-        <Star size={20} className="text-accent mx-auto" fill="currentColor" />
-        <p className="text-2xl font-display mt-1">24</p>
-        <p className="text-[10px] font-bold text-muted-foreground tracking-wider">TOTAL STARS</p>
-      </div>
-    </div>
 
-    <button
-      onClick={onNote}
-      className="mt-4 w-full bg-accent-soft border-2 border-dashed border-accent/50 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
-    >
-      <div className="shrink-0">
-        <Olee pose="thinking" size={56} />
+      <h2 className="text-2xl font-display mt-2 text-center">You did it, Aarav!</h2>
+      <p className="text-xs text-muted-foreground text-center mt-1 leading-relaxed">
+        You grew 1 flower today. <span className="font-extrabold text-foreground">8 days in a row!</span>
+      </p>
+
+      <div className="grid grid-cols-2 gap-2 mt-3 w-full">
+        <div className="bg-primary-light rounded-2xl p-2.5 text-center">
+          <Flame size={18} className="text-accent mx-auto" fill="currentColor" />
+          <p className="text-xl font-display">8</p>
+          <p className="text-[9px] font-bold text-muted-foreground tracking-wider">DAY STREAK</p>
+        </div>
+        <div className="bg-accent-soft rounded-2xl p-2.5 text-center">
+          <Star size={18} className="text-accent mx-auto" fill="currentColor" />
+          <p className="text-xl font-display">24</p>
+          <p className="text-[9px] font-bold text-muted-foreground tracking-wider">TOTAL STARS</p>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
+
+      {/* Emoji reactions */}
+      <div className="w-full mt-4">
         <p className="text-[10px] font-extrabold tracking-wider text-accent">OLEE WANTS TO KNOW</p>
-        <p className="text-sm font-bold text-foreground mt-0.5 leading-snug">
-          What was the coolest thing in your story today?
-        </p>
-      </div>
-      <Pencil size={18} className="text-accent shrink-0" />
-    </button>
+        <p className="text-sm font-bold text-foreground mt-0.5">{adv.q}</p>
+        <div className="mt-2.5 flex gap-1.5 justify-between">
+          {EMOJI_REACTIONS.map((r, i) => (
+            <button
+              key={i}
+              onClick={() => setPicked(i)}
+              style={{ background: r.bg }}
+              className={cn(
+                "flex-1 rounded-2xl px-1 py-2 flex flex-col items-center gap-0.5 transition active:scale-95",
+                picked === i ? "ring-2 ring-primary scale-105" : picked !== null ? "opacity-50" : ""
+              )}
+            >
+              <span className="text-xl leading-none">{r.e}</span>
+              <span className="text-[9px] font-extrabold text-foreground leading-tight text-center">{r.label}</span>
+            </button>
+          ))}
+        </div>
 
-    <div className="w-full mt-auto space-y-2 pt-4">
-      <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
-      <OutlineBtn onClick={onDone}>Done for today</OutlineBtn>
+        {reaction && (
+          <div className="mt-3 bg-primary-light rounded-2xl rounded-tl-sm px-3 py-2">
+            <p className="text-xs font-bold text-foreground">{reaction.reply}</p>
+          </div>
+        )}
+
+        <button onClick={() => { setExpand((x) => !x); onNote && setTimeout(() => {}, 0); }}
+          className="mt-2 w-full text-[11px] font-extrabold text-accent text-center py-1.5">
+          Want to tell Olee more? →
+        </button>
+        {expand && (
+          <button onClick={onNote}
+            className="w-full bg-card border-2 border-dashed border-accent/40 rounded-2xl p-3 text-left">
+            <p className="text-[10px] font-bold text-muted-foreground">Open the note pad</p>
+            <p className="text-xs font-bold text-foreground">"My favorite part was..."</p>
+          </button>
+        )}
+      </div>
+
+      <div className="w-full mt-auto space-y-2 pt-4">
+        <PrimaryBtn onClick={onProgress}>See my progress</PrimaryBtn>
+        <OutlineBtn onClick={onDone}>Done for today</OutlineBtn>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+
 
 const StoryNote = ({ onBack, onSave }: any) => {
   const [text, setText] = useState("");
@@ -785,7 +894,7 @@ const StoryNote = ({ onBack, onSave }: any) => {
   );
 };
 
-const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
+const Progress = ({ tab, setTab, onDetails, onOlee, onWeekly }: any) => {
   const days = [
     { d: "M", done: true }, { d: "T", done: true }, { d: "W", done: true },
     { d: "T", done: true }, { d: "F", done: false }, { d: "S", today: true, done: true }, { d: "S", done: false },
@@ -832,6 +941,21 @@ const Progress = ({ tab, setTab, onDetails, onOlee }: any) => {
             <p className="text-[11px] text-muted-foreground font-semibold">1 more story to bloom</p>
           </div>
           <ChevronRight size={18} className="text-foreground/50" />
+        </button>
+
+        <button
+          onClick={onWeekly}
+          className="mt-3 w-full bg-card border-2 border-accent/30 rounded-2xl p-4 flex items-center gap-3 text-left active:scale-[0.99] transition"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center text-2xl">
+            📖
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-extrabold tracking-wider text-accent">THIS WEEK'S STORY</p>
+            <p className="font-display text-foreground text-sm leading-tight">Olee's weekly story</p>
+            <p className="text-[11px] text-muted-foreground font-semibold">May 12 – May 18 · 5 days read</p>
+          </div>
+          <ChevronRight size={18} className="text-accent" />
         </button>
 
         <div className="mt-3 bg-card border border-border rounded-2xl p-4">
@@ -2039,5 +2163,92 @@ const OleeLibrary = ({ onBack }: { onBack: () => void }) => {
     </div>
   );
 };
+
+/* ---------- Evolution celebration (23) ---------- */
+const EvolutionScreen = ({ onContinue }: { onContinue: () => void }) => (
+  <div className="w-full h-full flex flex-col items-center justify-center px-6 py-6 bg-[radial-gradient(circle_at_center,_#fff_0%,_#DEF1E5_100%)] relative overflow-hidden">
+    {/* sparkles */}
+    {[[40, 80], [280, 100], [60, 300], [290, 320], [100, 500], [260, 540], [180, 60]].map(([x, y], i) => (
+      <div key={i} className="absolute text-accent animate-pop" style={{ left: x, top: y, animationDelay: `${i * 120}ms` }}>
+        <Sparkles size={20} fill="currentColor" />
+      </div>
+    ))}
+
+    <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE EVOLVED!</p>
+
+    <div className="mt-3 animate-float">
+      <Olee pose="celebrate" expression="proud" size={170} />
+    </div>
+
+    <h1 className="text-3xl font-display mt-4 text-foreground text-center">Olee evolved!</h1>
+    <div className="mt-2 flex items-center gap-2 bg-card border-2 border-primary/30 rounded-full px-4 py-2 shadow-sm">
+      <span className="text-sm font-extrabold text-foreground/70">Sapling Olee</span>
+      <ArrowRight size={16} className="text-primary" />
+      <span className="text-sm font-extrabold text-primary">Bloom Olee</span>
+    </div>
+
+    <p className="mt-4 text-sm text-center text-foreground/80 max-w-[260px] font-bold leading-relaxed">
+      Aarav helped Olee grow by reading every day!
+    </p>
+
+    <div className="absolute bottom-8 left-6 right-6">
+      <PrimaryBtn onClick={onContinue}>
+        <Sparkles size={18} /> Amazing!
+      </PrimaryBtn>
+    </div>
+  </div>
+);
+
+/* ---------- Weekly story (24) ---------- */
+const WeeklyStoryScreen = ({ onContinue }: { onContinue: () => void }) => (
+  <div className="w-full h-full flex flex-col px-5 pt-3 pb-5 bg-gradient-to-b from-primary-light/40 to-background overflow-y-auto scrollbar-hide">
+    <div className="text-center">
+      <p className="text-[10px] font-extrabold tracking-wider text-primary">OLEE'S WEEKLY STORY</p>
+      <p className="text-xs font-bold text-muted-foreground">May 12 – May 18</p>
+    </div>
+
+    <div className="mt-4 bg-card border-2 border-primary/30 rounded-3xl p-5 shadow-[0_10px_30px_-15px_rgba(91,175,133,0.4)]">
+      <div className="flex justify-center -mt-12 mb-2">
+        <div className="bg-card rounded-full p-2 border-2 border-primary/30">
+          <Olee pose="reading" size={70} />
+        </div>
+      </div>
+      <p className="text-sm leading-relaxed text-foreground font-semibold text-center">
+        This week, <span className="font-extrabold text-primary">Aarav</span> and Olee shared
+        <span className="font-extrabold"> 5 reading adventures</span> together! They explored
+        <span className="italic"> The Tiger Who Came to Tea</span> and
+        <span className="italic"> Charlotte's Web</span>, growing
+        <span className="font-extrabold"> 7 beautiful flowers</span> in their garden.
+        Aarav said the stories were <span className="font-extrabold">"mind-blowing"</span> most of the time —
+        Olee agrees! Olee grew <span className="font-extrabold">8 stars</span> closer to becoming a Bloom.
+      </p>
+
+      <div className="mt-4 flex justify-center gap-1.5 text-2xl">
+        <span>🌸</span><span>🌸</span><span>🌱</span><span>🌸</span><span>🌸</span>
+        <span className="opacity-30">·</span><span>🌸</span>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div className="bg-primary-light rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">5</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">DAYS READ</p>
+        </div>
+        <div className="bg-accent-soft rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">7</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">FLOWERS</p>
+        </div>
+        <div className="bg-primary-light rounded-xl py-2">
+          <p className="text-lg font-display text-foreground leading-none">15</p>
+          <p className="text-[9px] font-extrabold text-muted-foreground tracking-wider mt-0.5">STARS</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-4 space-y-2">
+      <OutlineBtn onClick={() => {}}>Share Olee's story</OutlineBtn>
+      <PrimaryBtn onClick={onContinue}>Continue to Today <ArrowRight size={18} /></PrimaryBtn>
+    </div>
+  </div>
+);
 
 export default Index;
