@@ -158,6 +158,10 @@ const Index = () => {
             {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "todayV2" && <TodayV2 onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
+            {screen === "gardenToday" && <GardenToday onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} onWardrobe={() => setScreen("wardrobe")} tab={tab} setTab={goTab} />}
+            {screen === "unlockReveal" && <UnlockReveal onGarden={() => setScreen("gardenToday")} onKeepReading={() => setScreen("gardenToday")} />}
+            {screen === "oleeChat" && <OleeChat onDone={() => setScreen("unlockReveal")} />}
+            {screen === "wardrobe" && <Wardrobe onBack={() => setScreen("gardenToday")} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
