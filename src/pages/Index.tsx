@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import TodayV2 from "@/components/TodayV2";
+import GardenToday from "@/components/olee/GardenToday";
+import UnlockReveal from "@/components/olee/UnlockReveal";
+import OleeChat from "@/components/olee/OleeChat";
+import Wardrobe from "@/components/olee/Wardrobe";
 import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
@@ -12,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today" | "todayV2"
+  | "gardenToday" | "unlockReveal" | "oleeChat" | "wardrobe"
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
@@ -77,6 +82,10 @@ const Index = () => {
     { id: "setupDone", label: "5. All set" },
     { id: "today", label: "6. Today" },
     { id: "todayV2", label: "6b. Today V2" },
+    { id: "gardenToday", label: "6c. 🌱 Garden V3" },
+    { id: "unlockReveal", label: "8c. 🎁 Unlock" },
+    { id: "oleeChat", label: "8d. 💬 Olee chat" },
+    { id: "wardrobe", label: "26. 👕 Wardrobe" },
     { id: "timer", label: "7. Timer" },
     { id: "celebrate", label: "8. Celebrate" },
     { id: "storyNote", label: "8b. Story note" },
