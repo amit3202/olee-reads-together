@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Olee } from "@/components/Olee";
 import { BottomNav } from "@/components/BottomNav";
 import TodayV2 from "@/components/TodayV2";
+import GardenToday from "@/components/olee/GardenToday";
+import UnlockReveal from "@/components/olee/UnlockReveal";
+import OleeChat from "@/components/olee/OleeChat";
+import Wardrobe from "@/components/olee/Wardrobe";
 import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
@@ -12,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 type Screen =
   | "splash" | "welcome" | "setup1" | "setup2" | "setupDone" | "today" | "todayV2"
+  | "gardenToday" | "unlockReveal" | "oleeChat" | "wardrobe"
   | "timer" | "celebrate" | "storyNote" | "progress" | "progressDetails"
   | "stories" | "story" | "storyRead" | "missed" | "oleeGrowth" | "oleeLibrary"
   | "login" | "settings" | "editChild" | "subscription"
@@ -77,6 +82,10 @@ const Index = () => {
     { id: "setupDone", label: "5. All set" },
     { id: "today", label: "6. Today" },
     { id: "todayV2", label: "6b. Today V2" },
+    { id: "gardenToday", label: "6c. 🌱 Garden V3" },
+    { id: "unlockReveal", label: "8c. 🎁 Unlock" },
+    { id: "oleeChat", label: "8d. 💬 Olee chat" },
+    { id: "wardrobe", label: "26. 👕 Wardrobe" },
     { id: "timer", label: "7. Timer" },
     { id: "celebrate", label: "8. Celebrate" },
     { id: "storyNote", label: "8b. Story note" },
@@ -104,10 +113,10 @@ const Index = () => {
     <div className="min-h-screen bg-[#EFEAE0] py-10 px-4">
       <header className="max-w-6xl mx-auto mb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-display text-foreground tracking-tight">
-          ReadSprout <span className="text-primary">·</span> Olee
+          <span className="text-primary">🌱 Olee</span>
         </h1>
         <p className="text-muted-foreground mt-2 font-semibold">
-          A calm, parent-guided daily reading habit for kids 4–9
+          Your child's reading buddy — a living garden world
         </p>
       </header>
 
@@ -149,6 +158,10 @@ const Index = () => {
             {screen === "setupDone" && <SetupDone onNext={() => { setTab("today"); setScreen("today"); }} />}
             {screen === "today" && <Today onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
             {screen === "todayV2" && <TodayV2 onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} tab={tab} setTab={goTab} />}
+            {screen === "gardenToday" && <GardenToday onStart={() => setScreen("timer")} onStories={() => setScreen("stories")} onWardrobe={() => setScreen("wardrobe")} tab={tab} setTab={goTab} />}
+            {screen === "unlockReveal" && <UnlockReveal onGarden={() => setScreen("gardenToday")} onKeepReading={() => setScreen("gardenToday")} />}
+            {screen === "oleeChat" && <OleeChat onDone={() => setScreen("unlockReveal")} />}
+            {screen === "wardrobe" && <Wardrobe onBack={() => setScreen("gardenToday")} />}
             {screen === "timer" && <Timer onDone={() => setScreen("celebrate")} onBack={() => setScreen("today")} />}
             {screen === "celebrate" && <Celebrate onProgress={() => { setTab("progress"); setScreen("progress"); }} onDone={() => { setTab("today"); setScreen("today"); }} onNote={() => setScreen("storyNote")} />}
             {screen === "storyNote" && <StoryNote onBack={() => setScreen("celebrate")} onSave={() => setScreen("celebrate")} />}
