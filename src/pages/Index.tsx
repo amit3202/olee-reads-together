@@ -113,10 +113,10 @@ const Index = () => {
     <div className="min-h-screen bg-[#EFEAE0] py-10 px-4">
       <header className="max-w-6xl mx-auto mb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-display text-foreground tracking-tight">
-          ReadSprout <span className="text-primary">·</span> Olee
+          <span className="text-primary">🌱 Olee</span>
         </h1>
         <p className="text-muted-foreground mt-2 font-semibold">
-          A calm, parent-guided daily reading habit for kids 4–9
+          Your child's reading buddy — a living garden world
         </p>
       </header>
 
