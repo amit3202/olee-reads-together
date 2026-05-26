@@ -6,6 +6,7 @@ import GardenToday from "@/components/olee/GardenToday";
 import UnlockReveal from "@/components/olee/UnlockReveal";
 import OleeChat from "@/components/olee/OleeChat";
 import Wardrobe from "@/components/olee/Wardrobe";
+import { LivingOlee } from "@/components/olee/LivingOlee";
 import {
   ArrowRight, ArrowLeft, Play, Pause, Flame, Star, BookOpen,
   CheckCircle2, ChevronRight, ShieldCheck, Sparkles, Mail, Bell,
