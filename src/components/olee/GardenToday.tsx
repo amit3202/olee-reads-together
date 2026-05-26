@@ -210,7 +210,7 @@ export const GardenToday = ({ onStart, onStories, onWardrobe, onUnlock, tab, set
       )}
 
       {/* === BOTTOM action cluster === */}
-      <div className="absolute bottom-[72px] left-0 right-0 px-3 space-y-2.5 z-20">
+      <div className="absolute bottom-[92px] left-0 right-0 px-3 space-y-2.5 z-20 pb-3">
         {/* Mission */}
         <div
           className="relative rounded-2xl px-3 py-2.5 flex items-center gap-2.5 bg-white/90 backdrop-blur-sm"
