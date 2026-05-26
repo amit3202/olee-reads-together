@@ -1659,11 +1659,10 @@ const SubscriptionScreen = ({ onBack }: { onBack: () => void }) => {
 /* ---------- Notification preview (18, 19, 20) ---------- */
 const Notification_ = ({ kind, onOpen }: { kind: "daily" | "missed" | "weekly"; onOpen: () => void }) => {
   const data = {
-    daily: { title: "ReadSprout", body: "Olee is waiting to read with Aarav! Just 15 minutes today. 📚", time: "6:30 PM", icon: Bell },
-    missed: { title: "ReadSprout", body: "Olee missed you yesterday, but today is a fresh start! 💚", time: "9:00 AM", icon: Heart },
-    weekly: { title: "ReadSprout · Weekly", body: "Aarav read 5 of 7 days this week! Olee is growing strong. 🌱", time: "Sun 7:00 PM", icon: Calendar },
+    daily: { title: "ReadSprout", body: "Olee is waiting to read with Aarav! Just 15 minutes today. 📚", time: "6:30 PM", mood: "hopeful" as const },
+    missed: { title: "ReadSprout", body: "Olee missed you yesterday, but today is a fresh start! 💚", time: "9:00 AM", mood: "subdued" as const },
+    weekly: { title: "ReadSprout · Weekly", body: "Aarav read 5 of 7 days this week! Olee is growing strong. 🌱", time: "Sun 7:00 PM", mood: "glowing" as const },
   }[kind];
-  const Icon = data.icon;
   return (
     <div className="w-full h-full bg-gradient-to-b from-foreground/85 to-foreground/95 flex flex-col px-4 pt-4 relative overflow-hidden">
       <div className="text-center text-background/90">
@@ -1673,8 +1672,8 @@ const Notification_ = ({ kind, onOpen }: { kind: "daily" | "missed" | "weekly"; 
 
       <div className="mt-8 bg-card/95 backdrop-blur rounded-3xl p-3.5 shadow-2xl animate-fade-in">
         <div className="flex items-start gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0">
-            <Icon size={18} className="text-primary-foreground" />
+          <div className="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center shrink-0 overflow-hidden">
+            <LivingOlee mood={data.mood} size={42} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
@@ -1685,6 +1684,7 @@ const Notification_ = ({ kind, onOpen }: { kind: "daily" | "missed" | "weekly"; 
           </div>
         </div>
       </div>
+
 
       <div className="mt-3 bg-card/20 backdrop-blur rounded-2xl p-3 flex items-center gap-2.5">
         <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
